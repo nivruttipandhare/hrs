@@ -1,66 +1,58 @@
 const db = require('../config/db');
 const bcrypt = require('bcrypt');
 
-// ✅ REGISTER CONTROLLER
+// ✅ REGISTER CONTROLLER (redirects to login after registration)
 exports.register = async (req, res) => {
   const { username, useremail, password, contact, type } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
 
-  db.query(
-    "INSERT INTO usermaster (username, useremail, password, contact, type) VALUES (?, ?, ?, ?, ?)",
-    [username, useremail, hashedPassword, contact, type],
-    (err) => {
-      if (err) {
-        console.error(err);
-        return res.send("Registration Failed");
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    db.query(
+      "INSERT INTO usermaster (username, useremail, password, contact, type) VALUES (?, ?, ?, ?, ?)",
+      [username, useremail, hashedPassword, contact, type],
+      (err) => {
+        if (err) {
+          console.error("Registration DB Error:", err);
+          return res.render('register', { message: 'Registration Failed' });
+        }
+
+        // ✅ Redirect to login page after successful registration
+        console.log("redirecting to login page");
+        
+        return res.redirect('/login');
       }
-
-      // ✅ Fetch newly registered user and set session
-      db.query("SELECT * FROM usermaster WHERE useremail = ?", [useremail], (err2, result) => {
-        if (err2 || result.length === 0) {
-          console.error(err2);
-          return res.send("Login session setup failed");
-        }
-
-        const user = result[0];
-
-        req.session.user = {
-          id: user.id,
-          username: user.username,
-          type: user.type,
-        };
-
-        // ✅ Redirect based on user type
-        if (user.type === 'admin') {
-          res.redirect('/admin/dashboard');
-        } else {
-          res.redirect('/user/dashboard');
-        }
-      });
-    }
-  );
+    );
+  } catch (error) {
+    console.error("Registration Error:", error);
+    return res.render('register', { message: 'Error in registration' });
+  }
 };
 
 // ✅ LOGIN CONTROLLER
-exports.login = async (req, res) => {
+exports.login = (req, res) => {
   const { useremail, password } = req.body;
 
-  console.log("Login Data:", req.body);  // ✅ Good place to log it
+  const sql = 'SELECT * FROM usermaster WHERE useremail = ?';
 
-  db.query("SELECT * FROM usermaster WHERE useremail = ?", [useremail], async (err, result) => {
-    if (err) throw err;
-
-    if (result.length === 0) {
-      return res.render("login", { message: "User not found" });
+  db.query(sql, [useremail], async (err, results) => {
+    if (err) {
+      console.error("Login DB Error:", err);
+      return res.render('login', { message: 'Database error' });
     }
 
-    const user = result[0];
-    const match = await bcrypt.compare(password, user.password);
-
-    if (!match) {
-      return res.render('login', { message: 'Invalid password' });
+    if (results.length === 0) {
+      return res.render('login', { message: 'User not found' });
     }
 
+    const user = results[0];
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.render('login', { message: 'Incorrect password' });
+    }
+
+    // ✅ Store session
     req.session.user = {
       id: user.id,
       username: user.username,
@@ -73,5 +65,5 @@ exports.login = async (req, res) => {
     } else {
       return res.redirect('/user/dashboard');
     }
-  }); // <-- Close db.query
-}; // <-- Close exports.login
+  });
+};

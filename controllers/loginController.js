@@ -1,11 +1,17 @@
+const db = require('../config/db');
+const bcrypt = require('bcrypt');
+
 // ✅ LOGIN CONTROLLER
 exports.login = async (req, res) => {
   const { useremail, password } = req.body;
 
-  console.log("Login Data:", req.body);  // ✅ Good place to log it
+  console.log("Login Data:", req.body);
 
   db.query("SELECT * FROM usermaster WHERE useremail = ?", [useremail], async (err, result) => {
-    if (err) throw err;
+    if (err) {
+      console.error("DB error:", err);
+      return res.render("login", { message: "Database error" });
+    }
 
     if (result.length === 0) {
       return res.render("login", { message: "User not found" });
@@ -30,5 +36,5 @@ exports.login = async (req, res) => {
     } else {
       return res.redirect('/user/dashboard');
     }
-  }); // <-- Close db.query
-}; // <-- Close exports.login
+  });
+};
