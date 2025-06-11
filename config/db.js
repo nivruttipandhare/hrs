@@ -6,6 +6,7 @@ const db = mysql.createConnection({
   password: "coder",         
   database: "hotel" 
 });
+//added comment
 
 db.connect((err) => {
   if (err) {
