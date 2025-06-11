@@ -3,6 +3,7 @@ exports.register = (req, res) => {
   console.log("Registering user");
   res.send("User registered");
 };
+// for login purpose
 
 exports.login = (req, res) => {
   console.log("Logging in user");
