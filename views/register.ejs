@@ -1,76 +1,193 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Register Page</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HotelRecommender - Find Your Perfect Stay</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+        }
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(45deg, #007bff, #00c6ff);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            padding: 140px 20px 100px;
+            background: url('https://source.unsplash.com/1600x600/?hotel,travel') no-repeat center center/cover;
+            color: #fff;
+            position: relative;
+        }
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+        .hero-section .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Card Hover Effect */
+        .hotel-card img {
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        .hotel-card:hover img {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Map */
+        .map-container {
+            height: 400px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .hero-section {
+             background: url('https://source.unsplash.com/1600x600/?hotel,resort') no-repeat center center/cover;
+             padding: 140px 20px 100px;
+             position: relative;
+            color: #fff;
+        }
+
+     .hero-section {
+    height: 350px;  /* reduced height */
+    overflow: hidden;
+    position: relative;
+}
+
+.hero-img {
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(20%);
+}
+
+.overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+
+
+        /* Footer */
+        footer {
+            background-color: #001f3f;
+            color: #fff;
+        }
+    </style>
 </head>
+<body>
 
-<body class="bg-light">
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card shadow p-4">
-                    <h3 class="mb-4 text-center">Register</h3>
-
-                    <% if (message) { %>
-  <div class="alert alert-danger"><%= message %></div>
-<% } %>
-
-                    <!-- ✅ Form configuration -->
-                    <form action="/register" method="POST">
-
-
-                        <!-- Username -->
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="username" name="username" placeholder="Enter Username" required>
-                        </div>
-
-                        <!-- Email -->
-                        <div class="mb-3">
-                            <label for="useremail" class="form-label">Email address</label>
-                            <input type="email" class="form-control" id="useremail" name="useremail" placeholder="Enter Email" required>
-                        </div>
-
-                        <!-- Password -->
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter Password" required>
-                        </div>
-
-                        <!-- Contact -->
-                        <div class="mb-3">
-                            <label for="contact" class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control" id="contact" name="contact" placeholder="Enter Phone Number" pattern="\d{10}" required />
-                        </div>
-
-                        <!-- User Type -->
-                        <div class="mb-3">
-                            <label for="type" class="form-label">User Type</label>
-                            <select class="form-select" id="type" name="type" required>
-                                <option value="">Select Type</option>
-                                <option value="user">User</option>
-                                <!-- <option value="owner">Owner</option> -->
-                                <option value="admin">Admin</option>
-                            </select>
-                        </div>
-
-                        <!-- Submit -->
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">Register</button>
-                        </div>
-                        <p class="mt-3 text-center">Already have an account? <a href="./login">Login here</a></p>
-                    </form>
-
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center fw-bold fs-4" href="#">
+                <img src="https://cdn-icons-png.flaticon.com/512/235/235861.png" alt="Hotel Logo" width="40" height="40" class="me-2">
+                HotelRecommender
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <div class="d-flex gap-3">
+                    <a href="/login" class="btn btn-outline-light px-4 fw-semibold">Login</a>
+                    <a href="/register" class="btn btn-warning px-4 fw-semibold text-dark">Register</a>
                 </div>
             </div>
         </div>
+    </nav>
+
+    <section class="hero-section text-center position-relative">
+    <!-- Add the image directly -->
+    <img src="https://source.unsplash.com/1600x600/?luxury,hotel" class="w-100 hero-img" alt="Hero Image">
+    
+    <!-- Overlay to darken image -->
+    <div class="overlay"></div>
+
+    <!-- Content on top -->
+    <div class="container position-absolute top-50 start-50 translate-middle text-white">
+        <h1 class="display-5 fw-bold mb-2">Discover Your Dream Hotel</h1>
+        <p class="lead mb-3">Uncover luxurious stays with stunning views and world-class amenities.</p>
     </div>
+</section>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Hotel Gallery -->
+    <section id="hotels" class="py-5">
+        <div class="container">
+            <h2 class="fw-bold text-center mb-5 text-dark">Our Top Picks</h2>
+            <div class="row g-4">
+                <!-- Hotel 1 -->
+                <div class="col-md-4">
+                    <div class="card hotel-card shadow-sm border-0">
+                        <img src="https://source.unsplash.com/600x400/?luxury,hotel" class="card-img-top" alt="Hotel 1">
+                        <div class="card-body text-center">
+                            <h5 class="fw-bold mb-3">The Royal Palace</h5>
+                            <a href="#" class="btn btn-primary w-75">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Hotel 2 -->
+                <div class="col-md-4">
+                    <div class="card hotel-card shadow-sm border-0">
+                        <img src="https://source.unsplash.com/600x400/?hotel,resort" class="card-img-top" alt="Hotel 2">
+                        <div class="card-body text-center">
+                            <h5 class="fw-bold mb-3">Sunshine Residency</h5>
+                            <a href="#" class="btn btn-primary w-75">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Hotel 3 -->
+                <div class="col-md-4">
+                    <div class="card hotel-card shadow-sm border-0">
+                        <img src="https://source.unsplash.com/600x400/?beach,resort" class="card-img-top" alt="Hotel 3">
+                        <div class="card-body text-center">
+                            <h5 class="fw-bold mb-3">Ocean View Paradise</h5>
+                            <a href="#" class="btn btn-primary w-75">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Map Section -->
+    <section class="map-section py-5">
+        <div class="container">
+            <h2 class="fw-bold text-center mb-4 text-dark">Find Hotels Near You</h2>
+            <div class="map-container">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d242347.1025176785!2d72.74109938496972!3d19.08219783973039!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7b63fd7f264d5%3A0xe4bc053ecbd3a60b!2sMumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1621843638353!5m2!1sen!2sin" allowfullscreen="" loading="lazy" style="border:0; width: 100%; height: 100%;"></iframe>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-4">
+        <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
+            <p class="mb-0 fw-semibold">© 2025 HotelRecommender</p>
+            <div class="d-flex gap-3">
+                <a href="#" class="text-white text-decoration-none">Privacy Policy</a>
+                <a href="#" class="text-white text-decoration-none">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

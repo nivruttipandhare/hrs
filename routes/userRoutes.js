@@ -11,6 +11,7 @@ router.get('/register', (req, res) => {
 // Register logic
 router.post('/register', authController.register);
 
+
 // Login page
 router.get('/login', (req, res) => {
   res.render('login', { message: null });
