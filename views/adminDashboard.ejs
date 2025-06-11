@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <script src="./adminDashboard.js"></script>
+</head>
+<body>
+
+    <div>
+        <div>
+            <h2>Admin Dashboard</h2>
+            <nav>
+                <ul>
+                    <li><a href="#overview">Dashboard Overview</a></li>
+                    <li><a href="#manage-users">Manage Users</a></li>
+                    <li><a href="#manage-hotels">Manage Hotels</a></li>
+                    <li><a href="#manage-bookings">Manage Bookings</a></li>
+                    <li><a href="#manage-reviews">Manage Reviews</a></li>
+                    <li><a href="#user-queries">User Queries</a></li>
+                    <li><a href="/admin/logout">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <div>
+
+            <section id="overview">
+                <h3>Welcome, <%= adminUser.username %>!</h3>
+                <h4>Dashboard Overview</h4>
+                <div>
+                    <p>Total Users: <%= dashboardStats.totalUsers %></p>
+                    <p>Total Hotels: <%= dashboardStats.totalHotels %></p>
+                    <p>Total Bookings: <%= dashboardStats.totalBookings %></p>
+                    <p>Total Reviews: <%= dashboardStats.totalReviews %></p>
+                    <p>Pending User Queries: <%= dashboardStats.pendingQueries %></p>
+                </div>
+            </section>
+
+            <section id="manage-users">
+                <h3>Manage Users</h3>
+                <button onclick="alert('Implement Add New User form/modal!')">Add New User</button>
+                <br><br>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Contact</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (users && users.length > 0) { %>
+                            <% users.forEach(user => { %>
+                                <tr>
+                                    <td><%= user.user_id_INT %></td>
+                                    <td><%= user.username %></td>
+                                    <td><%= user.useremail %></td>
+                                    <td><%= user.contact %></td>
+                                    <td>
+                                        <button onclick="alert('Edit user <%= user.user_id_INT %>')">Edit</button>
+                                        <button onclick="confirmDeleteUser('<%= user.user_id_INT %>')">Delete</button>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="5">No users found.</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="manage-hotels">
+                <h3>Manage Hotels</h3>
+                <button onclick="alert('Implement Add New Hotel form/modal!')">Add New Hotel</button>
+                <br><br>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Hotel ID</th>
+                            <th>Hotel Name</th>
+                            <th>City</th>
+                            <th>Rating</th>
+                            <th>Reviews</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (hotels && hotels.length > 0) { %>
+                            <% hotels.forEach(hotel => { %>
+                                <tr>
+                                    <td><%= hotel.hotel_id_INT %></td>
+                                    <td><%= hotel.hotel_name %></td>
+                                    <td><%= hotel.city_name %></td>
+                                    <td><%= hotel.rating %></td>
+                                    <td><%= hotel.reviewcount %></td>
+                                    <td>
+                                        <button onclick="alert('Edit hotel <%= hotel.hotel_id_INT %>')">Edit</button>
+                                        <button onclick="confirmDeleteHotel('<%= hotel.hotel_id_INT %>')">Delete</button>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="6">No hotels found.</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="manage-bookings">
+                <h3>Manage Bookings</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>User Name</th>
+                            <th>Hotel Name</th>
+                            <th>Room Type</th>
+                            <th>Check-in</th>
+                            <th>Check-out</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (bookings && bookings.length > 0) { %>
+                            <% bookings.forEach(booking => { %>
+                                <tr>
+                                    <td><%= booking.booking_id_INT %></td>
+                                    <td><%= booking.user_name %></td> <%-- Assuming this is joined from usermaster --%>
+                                    <td><%= booking.hotel_name %></td>
+                                    <td><%= booking.room_type %></td>
+                                    <td><%= new Date(booking.checkin_date).toLocaleDateString() %></td>
+                                    <td><%= new Date(booking.checkout_date).toLocaleDateString() %></td>
+                                    <td><%= booking.status %></td> <%-- Assuming a status field --%>
+                                    <td>
+                                        <button onclick="alert('View details for booking <%= booking.booking_id_INT %>')">View Details</button>
+                                        <button onclick="alert('Change status for booking <%= booking.booking_id_INT %>')">Update Status</button>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="8">No bookings found.</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="manage-reviews">
+                <h3>Manage Reviews</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Review ID</th>
+                            <th>Hotel Name</th>
+                            <th>User Name</th>
+                            <th>Rating</th>
+                            <th>Review Text</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (reviews && reviews.length > 0) { %>
+                            <% reviews.forEach(review => { %>
+                                <tr>
+                                    <td><%= review.review_id_INT %></td>
+                                    <td><%= review.hotel_name %></td>
+                                    <td><%= review.username %></td> <%-- Assuming this is joined from usermaster --%>
+                                    <td><%= review.rating %></td>
+                                    <td><%= review.rev_text_TEXT.substring(0, 50) %><% if (review.rev_text_TEXT.length > 50) { %>...<% } %></td> <%-- Truncate long reviews --%>
+                                    <td><%= new Date(review.rev_date_DATETIME).toLocaleDateString() %></td>
+                                    <td>
+                                        <button onclick="alert('Moderate review <%= review.review_id_INT %>')">Moderate</button>
+                                        <button onclick="confirmDeleteReview('<%= review.review_id_INT %>')">Delete</button>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="7">No reviews found.</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="user-queries">
+                <h3>User Queries / Support</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Query ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Subject</th>
+                            <th>Message Preview</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (userQueries && userQueries.length > 0) { %>
+                            <% userQueries.forEach(query => { %>
+                                <tr>
+                                    <td><%= query.query_id_INT %></td>
+                                    <td><%= query.name %></td>
+                                    <td><%= query.email %></td>
+                                    <td><%= query.subject %></td>
+                                    <td><%= query.message.substring(0, 50) %><% if (query.message.length > 50) { %>...<% } %></td>
+                                    <td><%= new Date(query.query_date).toLocaleDateString() %></td>
+                                    <td><%= query.status %></td>
+                                    <td>
+                                        <button onclick="alert('View full query <%= query.query_id_INT %>')">View</button>
+                                        <button onclick="alert('Mark query <%= query.query_id_INT %> as resolved')">Resolve</button>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="8">No user queries found.</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </section>
+
+        </div>
+    </div>
+
+    <script>
+        // Basic client-side JS for dashboard navigation (can be more robust)
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebarLinks = document.querySelectorAll('nav ul li a');
+            const sections = document.querySelectorAll('main section');
+
+            function showSection(targetId) {
+                sections.forEach(section => {
+                    section.style.display = 'none';
+                });
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) {
+                    targetSection.style.display = 'block';
+                }
+            }
+
+            // Handle URL hash for initial section display
+            const initialHash = window.location.hash.substring(1) || 'overview';
+            showSection(initialHash);
+
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = e.target.getAttribute('href').substring(1);
+                    showSection(targetId);
+
+                    // Update URL hash without reloading
+                    history.pushState(null, '', `#${targetId}`);
+                });
+            });
+
+            // Example for confirm dialogs (replace with actual API calls)
+            function confirmDeleteUser(userId) {
+                if (confirm(`Are you sure you want to delete user ${userId}?`)) {
+                    alert('User deletion initiated (API call needed)!');
+                    // Example: fetch('/api/admin/users/' + userId, { method: 'DELETE' })
+                }
+            }
+
+            function confirmDeleteHotel(hotelId) {
+                if (confirm(`Are you sure you want to delete hotel ${hotelId}?`)) {
+                    alert('Hotel deletion initiated (API call needed)!');
+                    // Example: fetch('/api/admin/hotels/' + hotelId, { method: 'DELETE' })
+                }
+            }
+
+            function confirmDeleteReview(reviewId) {
+                if (confirm(`Are you sure you want to delete review ${reviewId}?`)) {
+                    alert('Review deletion initiated (API call needed)!');
+                    // Example: fetch('/api/admin/reviews/' + reviewId, { method: 'DELETE' })
+                }
+            }
+
+            // Make these functions globally accessible for onclick attributes
+            window.confirmDeleteUser = confirmDeleteUser;
+            window.confirmDeleteHotel = confirmDeleteHotel;
+            window.confirmDeleteReview = confirmDeleteReview;
+        });
+    </script>
+</body>
+</html>

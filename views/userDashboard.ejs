@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - Hotel Recommendation</title>
+    <%-- Bootstrap CSS --%>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <%-- Link to your custom CSS (for overrides or unique styles not covered by Bootstrap) --%>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* Keep minimal custom CSS for things not directly handled by Bootstrap */
+        body {
+            background-color: #f4f7f6; /* Lighter background than Bootstrap's default */
+        }
+        .dashboard-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            overflow: hidden; /* Ensures rounded corners are respected */
+        }
+        .sidebar {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            /* No shadow needed, main container has it */
+        }
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #ecf0f1;
+            padding-top: 15px; /* Added for visual spacing */
+        }
+        .sidebar .list-group-item {
+            background-color: transparent;
+            color: #ecf0f1;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .sidebar .list-group-item:hover, .sidebar .list-group-item.active {
+            background-color: #34495e;
+            color: #fff;
+        }
+        .dashboard-section {
+            padding: 25px; /* Consistent padding */
+        }
+        .dashboard-section h3 {
+            color: #3498db;
+            margin-top: 0;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .profile-info strong {
+            color: #555;
+            display: inline-block;
+            width: 120px; /* Adjusted width for better alignment */
+        }
+        .hotel-card img {
+            width: 150px; /* Slightly larger image */
+            height: 100px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .hotel-card .rating {
+            color: #f39c12; /* Star color */
+        }
+        .no-data-message {
+            text-align: center;
+            color: #888;
+            font-style: italic;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-3"> <%-- Use container-fluid for full width, py-3 for vertical padding --%>
+        <div class="row dashboard-container">
+            <%-- Sidebar Column --%>
+            <aside class="col-lg-3 col-md-4 sidebar p-0"> <%-- col-lg-3 for larger screens, col-md-4 for medium --%>
+                <h2>User Dashboard</h2>
+                <nav>
+                    <div class="list-group list-group-flush"> <%-- Bootstrap list group --%>
+                        <a href="#my-profile" class="list-group-item list-group-item-action active" aria-current="true">My Profile</a>
+                        <a href="#my-bookings" class="list-group-item list-group-item-action">My Bookings</a>
+                        <a href="#my-reviews" class="list-group-item list-group-item-action">My Reviews & Ratings</a>
+                        <a href="#recommendations" class="list-group-item list-group-item-action">Recommendations</a>
+                        <a href="#search-hotels" class="list-group-item list-group-item-action">Search & Browse Hotels</a>
+                        <a href="#contact-support" class="list-group-item list-group-item-action">Contact Support</a>
+                        <a href="/logout" class="list-group-item list-group-item-action">Logout</a> <%-- Assuming a logout route --%>
+                    </div>
+                </nav>
+            </aside>
+
+            <%-- Main Content Column --%>
+            <main class="col-lg-9 col-md-8 main-content">
+                <div class="tab-content"> <%-- Bootstrap tab-content for controlling section visibility --%>
+
+                    <section id="my-profile" class="dashboard-section tab-pane fade show active">
+                        <h3>My Profile</h3>
+                        <div class="card p-3 mb-3"> <%-- Bootstrap card for information display --%>
+                            <div class="profile-info">
+                                <p class="mb-2"><strong>Username:</strong> <%= user.username %></p>
+                                <p class="mb-2"><strong>Email:</strong> <%= user.useremail %></p>
+                                <p class="mb-0"><strong>Contact:</strong> <%= user.contact %></p>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary me-2" onclick="alert('Implement Edit Profile functionality!')">Edit Profile Details</button>
+                        <button class="btn btn-secondary" onclick="alert('Implement Change Password functionality!')">Change Password</button>
+                    </section>
+
+                    <section id="my-bookings" class="dashboard-section tab-pane fade">
+                        <h3>My Bookings</h3>
+                        <% if (bookings && bookings.length > 0) { %>
+                            <% bookings.forEach(booking => { %>
+                                <div class="card mb-3">
+                                    <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                                        <div class="booking-details mb-3 mb-md-0">
+                                            <p class="card-text mb-1"><strong>Booking ID:</strong> <%= booking.booking_id_INT %></p>
+                                            <p class="card-text mb-1"><strong>Hotel:</strong> <%= booking.hotel_name %></p>
+                                            <p class="card-text mb-1 text-muted"><small><%= booking.hotel_address %></small></p>
+                                            <p class="card-text mb-1"><strong>Room Type:</strong> <%= booking.room_type %></p>
+                                            <p class="card-text mb-1"><strong>Booking Date:</strong> <%= new Date(booking.booking_date).toLocaleDateString() %></p>
+                                            <p class="card-text mb-1"><strong>Check-in:</strong> <%= new Date(booking.checkin_date).toLocaleDateString() %> at <%= booking.checkin_time %></p>
+                                            <p class="card-text mb-0"><strong>Check-out:</strong> <%= new Date(booking.checkout_date).toLocaleDateString() %> at <%= booking.checkout_time %></p>
+                                        </div>
+                                        <div class="booking-actions d-grid gap-2 d-md-block"> <%-- Bootstrap grid gap for buttons --%>
+                                            <button class="btn btn-info btn-sm" onclick="alert('View details for booking <%= booking.booking_id_INT %>')">View Details</button>
+                                            <button class="btn btn-danger btn-sm" onclick="confirmCancelBooking('<%= booking.booking_id_INT %>')">Cancel Booking</button>
+                                            <button class="btn btn-secondary btn-sm" onclick="alert('Print/Download for booking <%= booking.booking_id_INT %>')">Print/Download</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <p class="no-data-message">You have no bookings yet.</p>
+                        <% } %>
+                    </section>
+
+                    <section id="my-reviews" class="dashboard-section tab-pane fade">
+                        <h3>My Reviews & Ratings</h3>
+                        <% if (reviews && reviews.length > 0) { %>
+                            <% reviews.forEach(review => { %>
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title mb-1"><%= review.hotel_name %></h5>
+                                        <p class="card-subtitle text-muted mb-2">Reviewed On: <%= new Date(review.rev_date_DATETIME).toLocaleDateString() %></p>
+                                        <p class="card-text mb-1"><strong>Rating:</strong> <span class="rating"><%= '⭐'.repeat(Math.round(review.rating)) %></span> (<%= review.rating %>/5)</p>
+                                        <p class="card-text">"<%= review.rev_text_TEXT %>"</p>
+                                        <div class="review-actions mt-3">
+                                            <button class="btn btn-primary btn-sm me-2" onclick="alert('Edit review <%= review.rev_id_INT %>')">Edit Review</button>
+                                            <button class="btn btn-danger btn-sm" onclick="confirmDeleteReview('<%= review.rev_id_INT %>')">Delete Review</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <p class="no-data-message">You haven't submitted any reviews yet.</p>
+                        <% } %>
+                    </section>
+
+                    <section id="recommendations" class="dashboard-section tab-pane fade">
+                        <h3>Personalized Hotel Recommendations</h3>
+                        <% if (recommendations && recommendations.length > 0) { %>
+                            <% recommendations.forEach(hotel => { %>
+                                <div class="card mb-3">
+                                    <div class="row g-0"> <%-- No gutters for card-body layout --%>
+                                        <div class="col-md-3">
+                                            <% if (hotel.thumbnail_image) { %>
+                                                <img src="/uploads/hotel_images/<%= hotel.thumbnail_image %>" class="img-fluid rounded-start" alt="<%= hotel.hotel_name %>">
+                                            <% } else { %>
+                                                <img src="/images/placeholder_hotel.jpg" class="img-fluid rounded-start" alt="No Image Available"> <%-- Placeholder image --%>
+                                            <% } %>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <div class="card-body">
+                                                <h5 class="card-title mb-1"><%= hotel.hotel_name %></h5>
+                                                <p class="card-text mb-1"><%= hotel.hotel_address %>, <%= hotel.city_name %></p>
+                                                <p class="card-text mb-1 rating">Rating: <%= '⭐'.repeat(Math.round(hotel.rating)) %> (<%= hotel.rating %> / 5) - <%= hotel.reviewcount %> Reviews</p>
+                                                <% if (hotel.amenities && hotel.amenities.length > 0) { %>
+                                                    <p class="card-text mb-1"><small class="text-muted">Amenities: <%= hotel.amenities.join(', ') %></small></p>
+                                                <% } %>
+                                                <% if (hotel.starting_price) { %>
+                                                    <p class="card-text mb-2"><strong>Starting from: ₹<%= hotel.starting_price %> / night</strong></p>
+                                                <% } %>
+                                                <button class="btn btn-primary btn-sm me-2" onclick="window.location.href='/hotel/<%= hotel.hotel_id_INT %>'">View Hotel Details</button>
+                                                <button class="btn btn-success btn-sm me-2" onclick="alert('Book <%= hotel.hotel_name %>')">Book Now</button>
+                                                <button class="btn btn-outline-secondary btn-sm" onclick="alert('Add <%= hotel.hotel_name %> to Wishlist')">Add to Wishlist</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <p class="no-data-message">No recommendations available at the moment. Explore hotels to help us learn your preferences!</p>
+                        <% } %>
+                    </section>
+
+                    <section id="search-hotels" class="dashboard-section tab-pane fade">
+                        <h3>Search & Browse Hotels</h3>
+                        <div class="input-group mb-3">
+                            <input type="text" id="hotelSearchInput" class="form-control" placeholder="Search by name, city, or area..." aria-label="Hotel search input">
+                            <button class="btn btn-primary" type="button" onclick="alert('Implement real-time search or submit form for search results!')">Search</button>
+                        </div>
+                        <% if (searchResults && searchResults.length > 0) { %>
+                            <h4 class="mb-3">Search Results:</h4>
+                            <% searchResults.forEach(hotel => { %>
+                                <div class="card mb-3">
+                                    <div class="row g-0">
+                                        <div class="col-md-3">
+                                            <% if (hotel.thumbnail_image) { %>
+                                                <img src="/uploads/hotel_images/<%= hotel.thumbnail_image %>" class="img-fluid rounded-start" alt="<%= hotel.hotel_name %>">
+                                            <% } else { %>
+                                                <img src="/images/placeholder_hotel.jpg" class="img-fluid rounded-start" alt="No Image Available">
+                                            <% } %>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <div class="card-body">
+                                                <h5 class="card-title mb-1"><%= hotel.hotel_name %></h5>
+                                                <p class="card-text mb-1"><%= hotel.hotel_address %>, <%= hotel.city_name %></p>
+                                                <p class="card-text mb-1 rating">Rating: <%= '⭐'.repeat(Math.round(hotel.rating)) %> (<%= hotel.rating %> / 5) - <%= hotel.reviewcount %> Reviews</p>
+                                                <% if (hotel.lowest_price) { %>
+                                                    <p class="card-text mb-2"><strong>Starting from: ₹<%= hotel.lowest_price %> / night</strong></p>
+                                                <% } %>
+                                                <button class="btn btn-primary btn-sm me-2" onclick="window.location.href='/hotel/<%= hotel.hotel_id_INT %>'">View Hotel Details</button>
+                                                <button class="btn btn-success btn-sm" onclick="alert('Book <%= hotel.hotel_name %>')">Book Now</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        <% } else if (typeof searchResults !== 'undefined') { %>
+                            <p class="no-data-message">No hotels found matching your search.</p>
+                        <% } %>
+                        <p class="no-data-message">Browse all available hotels <a href="/hotels">here</a>.</p>
+                    </section>
+
+                    <section id="contact-support" class="dashboard-section tab-pane fade">
+                        <h3>Contact Support / Submit Query</h3>
+                        <form id="contactForm">
+                            <div class="mb-3"> <%-- Bootstrap margin-bottom --%>
+                                <label for="queryName" class="form-label">Your Name:</label>
+                                <input type="text" id="queryName" name="name" value="<%= user.username %>" class="form-control" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label for="queryEmail" class="form-label">Your Email:</label>
+                                <input type="email" id="queryEmail" name="email" value="<%= user.useremail %>" class="form-control" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label for="querySubject" class="form-label">Subject:</label>
+                                <input type="text" id="querySubject" name="subject" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="queryMessage" class="form-label">Message:</label>
+                                <textarea id="queryMessage" name="message" rows="5" class="form-control" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit Query</button>
+                        </form>
+                    </section>
+
+                </div> <%-- End of tab-content --%>
+            </main>
+        </div> <%-- End of row --%>
+    </div> <%-- End of container-fluid --%>
+
+    <%-- Bootstrap Bundle with Popper --%>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        // Client-side JS for dashboard navigation and API calls
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebarLinks = document.querySelectorAll('.sidebar .list-group-item');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+
+            function showSection(targetId) {
+                tabPanes.forEach(pane => {
+                    pane.classList.remove('show', 'active');
+                });
+                const targetPane = document.getElementById(targetId);
+                if (targetPane) {
+                    targetPane.classList.add('show', 'active');
+                }
+            }
+
+            // Handle URL hash for initial section display
+            const initialHash = window.location.hash.substring(1) || 'my-profile';
+            showSection(initialHash);
+
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = e.target.getAttribute('href').substring(1);
+                    showSection(targetId);
+
+                    // Update active class
+                    sidebarLinks.forEach(l => l.classList.remove('active'));
+                    e.target.classList.add('active');
+
+                    // Update URL hash without reloading
+                    history.pushState(null, '', `#${targetId}`);
+                });
+            });
+
+            // Example for confirm dialogs (replace with actual API calls)
+            function confirmCancelBooking(bookingId) {
+                if (confirm(`Are you sure you want to cancel booking ${bookingId}?`)) {
+                    // Call your backend API to cancel the booking
+                    alert('Booking cancellation initiated (API call needed)!');
+                    // Example: fetch('/api/bookings/cancel/' + bookingId, { method: 'POST' })
+                }
+            }
+
+            function confirmDeleteReview(reviewId) {
+                if (confirm(`Are you sure you want to delete this review?`)) {
+                    // Call your backend API to delete the review
+                    alert('Review deletion initiated (API call needed)!');
+                    // Example: fetch('/api/reviews/' + reviewId, { method: 'DELETE' })
+                }
+            }
+
+            // Make these functions globally accessible for onclick attributes
+            window.confirmCancelBooking = confirmCancelBooking;
+            window.confirmDeleteReview = confirmDeleteReview;
+
+            // Handle contact form submission
+            document.getElementById('contactForm').addEventListener('submit', async function(event) {
+                event.preventDefault(); // Prevent default form submission
+
+                const formData = {
+                    name: document.getElementById('queryName').value,
+                    email: document.getElementById('queryEmail').value,
+                    subject: document.getElementById('querySubject').value,
+                    message: document.getElementById('queryMessage').value,
+                };
+
+                try {
+                    const response = await fetch('/api/userqueries', { // Your API endpoint for user queries
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer <%= user.token %>` // If you're using JWT
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        alert('Your query has been submitted successfully!');
+                        document.getElementById('contactForm').reset(); // Clear the form
+                        // Optionally, redirect or show a success message
+                    } else {
+                        alert('Failed to submit query: ' + (result.message || 'Unknown error'));
+                    }
+                } catch (error) {
+                    console.error('Error submitting query:', error);
+                    alert('An error occurred while submitting your query.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
