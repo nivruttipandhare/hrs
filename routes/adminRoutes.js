@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db'); // your DB connection, adjust if path differs
+const db = require('../config/db'); // your DB connection, adjust if path differs
 
 router.get('/dashboard', async (req, res) => {
   try {
