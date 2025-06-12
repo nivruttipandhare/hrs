@@ -1,8 +1,10 @@
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
+
 const userRoutes = require('./routes/userRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 
@@ -22,14 +24,19 @@ app.use(session({
   saveUninitialized: false
 }));
 
+app.get('/', (req, res) => {
+  res.render('userDashboard');
+});
+
 // Mount routes (so /login, /register, /user/dashboard work directly)
+app.use('/', authRoutes); 
 app.use('/', userRoutes);
 app.use('/', adminRoutes);
 
 // Default route → redirect to login
-app.get('/', (req, res) => {
-  res.redirect('/login');
-});
+
+
+app.use('/', authRoutes);
 
 // Server start
 const PORT = 3500;
