@@ -16,6 +16,7 @@ router.get('/login', (req, res) => {
 });
 
 // Login logic
+router.post('/register', authController.register);
 router.post('/login', authController.login);
 
 // User Dashboard Route

@@ -1,7 +1,8 @@
 const db = require('../config/db');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
-// ✅ REGISTER CONTROLLER (redirects to login after registration)
+// ✅ REGISTER CONTROLLER
 exports.register = async (req, res) => {
   const { username, useremail, password, contact, type } = req.body;
 
@@ -14,18 +15,14 @@ exports.register = async (req, res) => {
       (err) => {
         if (err) {
           console.error("Registration DB Error:", err);
-          return res.render('register', { message: 'Registration Failed' });
+          return res.status(500).json({ message: 'Registration Failed' });
         }
-
-        // ✅ Redirect to login page after successful registration
-        console.log("redirecting to login page");
-        
-        return res.redirect('/login');
+        return res.status(201).json({ message: 'User registered successfully' });
       }
     );
   } catch (error) {
     console.error("Registration Error:", error);
-    return res.render('register', { message: 'Error in registration' });
+    return res.status(500).json({ message: 'Error in registration' });
   }
 };
 
@@ -38,32 +35,26 @@ exports.login = (req, res) => {
   db.query(sql, [useremail], async (err, results) => {
     if (err) {
       console.error("Login DB Error:", err);
-      return res.render('login', { message: 'Database error' });
+      return res.status(500).json({ message: 'Database error' });
     }
 
     if (results.length === 0) {
-      return res.render('login', { message: 'User not found' });
+      return res.status(401).json({ message: 'User not found' });
     }
 
     const user = results[0];
-
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.render('login', { message: 'Incorrect password' });
+      return res.status(401).json({ message: 'Incorrect password' });
     }
 
-    // ✅ Store session
-    req.session.user = {
-      id: user.id,
-      username: user.username,
-      type: user.type,
-    };
+    // ✅ Generate JWT Token
+    const token = jwt.sign(
+      { userid: user.userid, username: user.username, type: user.type },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
 
-    // ✅ Redirect based on user type
-    if (user.type === 'admin') {
-      return res.redirect('/admin/dashboard');
-    } else {
-      return res.redirect('/user/dashboard');
-    }
+    return res.json({ token });
   });
 };
