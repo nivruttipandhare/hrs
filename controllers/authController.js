@@ -1,7 +1,7 @@
 const db = require('../config/db');
 const bcrypt = require('bcrypt');
 
-// ✅ REGISTER CONTROLLER (redirects to login after registration)
+// ✅ REGISTER CONTROLLER
 exports.register = async (req, res) => {
   const { username, useremail, password, contact, type } = req.body;
 
@@ -18,8 +18,7 @@ exports.register = async (req, res) => {
         }
 
         // ✅ Redirect to login page after successful registration
-        console.log("redirecting to login page");
-        
+        console.log("Redirecting to login page...");
         return res.redirect('/login');
       }
     );
@@ -56,14 +55,19 @@ exports.login = (req, res) => {
     req.session.user = {
       id: user.id,
       username: user.username,
-      type: user.type,
+      type: user.type, // storing 'user' or 'admin'
     };
 
     // ✅ Redirect based on user type
-    if (user.type === 'admin') {
-      return res.redirect('/admin/dashboard');
-    } else {
-      return res.redirect('/user/dashboard');
+    try {
+      if (user.type === 'admin') {
+        return res.redirect('/admin/dashboard');
+      } else {
+        return res.redirect('/user/dashboard');
+      }
+    } catch (err) {
+      console.error("Redirect Error:", err);
+      return res.render('login', { message: 'Server error during login' });
     }
   });
 };

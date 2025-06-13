@@ -3,310 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel Recommendation System - Find Your Perfect Stay</title>
+    <title>HotelRecommender - Find Your Perfect Stay</title>
     <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <!-- Animate.css for animations -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Custom CSS -->
     <style>
-        :root {
-            --primary-color: #4B0082; /* Rich Indigo */
-            --secondary-color: #FF6F61; /* Vibrant Coral */
-            --accent-color: #FFD700; /* Golden Yellow */
-            --neutral-bg: #F8F1E9; /* Soft Ivory */
-            --dark-color: #1C2526; /* Deep Navy */
-            --text-light: #FFFFFF; /* White for text */
-        }
-
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: var(--neutral-bg);
-            line-height: 1.6;
+            background-color: #f8f9fa;
         }
-
         /* Navbar */
         .navbar {
-            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-            padding: 1rem 0;
-            transition: all 0.3s ease;
-        }
-
-        .navbar-brand img {
-            transition: transform 0.3s ease;
-        }
-
-        .navbar-brand:hover img {
-            transform: scale(1.1);
-        }
-
-        .navbar .btn-outline-light {
-            border-color: var(--accent-color);
-            color: var(--accent-color);
-        }
-
-        .navbar .btn-outline-light:hover {
-            background: var(--accent-color);
-            color: var(--dark-color);
-        }
-
-        .navbar .btn-warning {
-            background: var(--accent-color);
-            color: var(--dark-color);
-            border: none;
-        }
-
-        .navbar .btn-warning:hover {
-            background: var(--secondary-color);
-            color: var(--text-light);
+            background: linear-gradient(45deg, #007bff, #00c6ff);
         }
 
         /* Hero Section */
         .hero-section {
+            padding: 140px 20px 100px;
+            background: url('https://source.unsplash.com/1600x600/?hotel,travel') no-repeat center center/cover;
+            color: #fff;
             position: relative;
-            height: 80vh;  /* just increased from 70vh to 80vh */
-            min-height: 450px;  /* slightly increased minimum height */
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        }
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+        .hero-section .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Card Hover Effect */
+        .hotel-card img {
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        .hotel-card:hover img {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Map */
+        .map-container {
+            height: 400px;
+            border-radius: 10px;
             overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .hero-section {
+             background: url('https://source.unsplash.com/1600x600/?hotel,resort') no-repeat center center/cover;
+             padding: 140px 20px 100px;
+             position: relative;
+            color: #fff;
+        }
+
+        .hero-section {
+            height: 350px;  /* reduced height */
+            overflow: hidden;
+            position: relative;
         }
 
         .hero-img {
-            position: absolute;
-            width: 100%;
             height: 100%;
             object-fit: cover;
-           /* filter: brightness(100%); */
-            /* transition: transform 0.5s ease; */
-        }
-
-        .hero-section:hover .hero-img {
-            transform: scale(1.05);
+            filter: brightness(20%);
         }
 
         .overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.4);
         }
 
-        .hero-content {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            color: var(--text-light);
-            padding: 2rem;
-        }
 
-        .hero-content .btn {
-            background: var(--secondary-color);
-            border: none;
-            transition: background 0.3s ease;
-        }
-
-        .hero-content .btn:hover {
-            background: var(--accent-color);
-            color: var(--dark-color);
-        }
-
-        /* Hotel Cards */
-        .hotel-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border-radius: 15px;
-            overflow: hidden;
-            background: var(--text-light);
-        }
-
-        .hotel-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .hotel-card img {
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .hotel-details {
-            padding: 1.5rem;
-        }
-
-        .rating {
-            color: var(--accent-color);
-            margin-bottom: 0.5rem;
-        }
-
-        .hotel-details .btn {
-            background: var(--primary-color);
-            border: none;
-        }
-
-        .hotel-details .btn:hover {
-            background: var(--secondary-color);
-        }
-
-        /* Map Section */
-        .map-container {
-            height: 400px;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            margin-bottom: 2rem;
-            border: 2px solid var(--secondary-color);
-        }
 
         /* Footer */
         footer {
-            background-color: var(--dark-color);
-            color: var(--text-light);
-            padding: 2rem 0;
-        }
-
-        footer a {
-            color: var(--accent-color);
-            transition: color 0.3s ease;
-        }
-
-        footer a:hover {
-            color: var(--secondary-color);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .hero-section {
-                height: 50vh;
-                min-height: 300px;
-            }
-
-            .hero-content h1 {
-                font-size: 2rem;
-            }
-
-            .hero-content p {
-                font-size: 1rem;
-            }
-
-            .hotel-card img {
-                height: 150px;
-            }
-
-            .map-container {
-                height: 300px;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .navbar-brand {
-                font-size: 1.2rem;
-            }
-
-            .hero-content h1 {
-                font-size: 1.5rem;
-            }
-
-            .hero-content p {
-                font-size: 0.9rem;
-            }
+            background-color: #001f3f;
+            color: #fff;
         }
     </style>
 </head>
 <body>
+
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top shadow-sm">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center fw-bold fs-4" href="#">
-                <img src="d:\HRS\hrs\public\images\logo.webp" alt="Hotel Logo" width="40" height="40" class="me-2">
-                Hotel Recommender
-            </a>
+                <img src="https://cdn-icons-png.flaticon.com/51 2/235/235861.png" alt="Hotel Logo" width="40" height="40" class="me-2">
+                Hotel Recommendation</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <div class="d-flex gap-3">
                     <a href="/login" class="btn btn-outline-light px-4 fw-semibold">Login</a>
-                    <a href="/register" class="btn btn-warning px-4 fw-semibold">Register</a>
+                    <a href="/register" class="btn btn-warning px-4 fw-semibold text-dark">Register</a>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="hero-section">
-        <img src="/images/img4.jpg" class="hero-img" alt="Hero Section">
-        <div class="overlay"></div>
-        <div class="hero-content">
-                <h1 class="display-4 fw-bold mb-3 fade-in" data-bs-animation="fadeIn">Welcome to Your Dream Getaway</h1>
-                <p class="lead mb-4 fade-in" data-bs-animation="fadeIn" style="animation-delay: 0.5s;">Explore our curated collection of luxurious hotels tailored just for you.</p>
-            </div>
-    </section>
+    <section class="hero-section text-center position-relative">
+    <!-- Add the image directly -->
+    <img src="https://source.unsplash.com/1600x600/?luxury,hotel" class="w-100 hero-img" alt="Hero Image">
+    
+    <!-- Overlay to darken image -->
+    <div class="overlay"></div>
+
+    <!-- Content on top -->
+    <div class="container position-absolute top-50 start-50 translate-middle text-white">
+        <h1 class="display-5 fw-bold mb-2">Discover Your Dream Hotel</h1>
+        <p class="lead mb-3">Uncover luxurious stays with stunning views and world-class amenities.</p>
+    </div>
+</section>
+
 
     <!-- Hotel Gallery -->
     <section id="hotels" class="py-5">
         <div class="container">
-            <h2 class="fw-bold text-center mb-5" style="color: var(--primary-color);">Our Top Hotel Picks</h2>
+            <h2 class="fw-bold text-center mb-5 text-dark">Our Top Picks</h2>
             <div class="row g-4">
                 <!-- Hotel 1 -->
-                <div class="col-md-4 col-sm-6">
+                <div class="col-md-4">
                     <div class="card hotel-card shadow-sm border-0">
-                        <img src="images/img1.jpeg" class="card-img-top" alt="Hotel 1">
-                        <div class="hotel-details">
-                            <h5 class="fw-bold mb-2">The Royal Palace</h5>
-                            <!-- <div class="rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
-                                <span>(4.5)</span>
-                            </div> -->
-                            <p class="text-muted mb-3">Luxurious suites with city views</p>
-                            <a href="#" class="btn btn-primary w-100">View Details</a>
+                        <img src="c:\Users\TEST PC\Desktop\hrs\hrs\public\images\img1.jpeg" class="card-img-top" alt="Hotel 1">
+                        <div class="card-body text-center">
+                            <h5 class="fw-bold mb-3">The Royal Palace</h5>
+                            <a href="#" class="btn btn-primary w-75">View Details</a>
                         </div>
                     </div>
                 </div>
                 <!-- Hotel 2 -->
-                <div class="col-md-4 col-sm-6">
+                <div class="col-md-4">
                     <div class="card hotel-card shadow-sm border-0">
-                        <img src="images/img2.jpeg" class="card-img-top" alt="Hotel 2">
-                        <div class="hotel-details">
-                            <h5 class="fw-bold mb-2">Sunshine Residency</h5>
-                            <!-- <div class="rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="far fa-star"></i>
-                                <span>(4.0)</span>
-                            </div> -->
-                            <p class="text-muted mb-3">Beachfront relaxation haven</p>
-                            <a href="#" class="btn btn-primary w-100">View Details</a>
+                        <img src="c:\Users\TEST PC\Desktop\hrs\hrs\public\images\img2.jpeg" class="card-img-top" alt="Hotel 2">
+                        <div class="card-body text-center">
+                            <h5 class="fw-bold mb-3">Sunshine Residency</h5>
+                            <a href="#" class="btn btn-primary w-75">View Details</a>
                         </div>
                     </div>
                 </div>
                 <!-- Hotel 3 -->
-                <div class="col-md-4 col-sm-6">
+                <div class="col-md-4">
                     <div class="card hotel-card shadow-sm border-0">
-                        <img src="images/img3.jpeg" class="card-img-top" alt="Hotel 3">                      
-                        <div class="hotel-details">
-                            <h5 class="fw-bold mb-2">Ocean View Paradise</h5>
-                            <!-- <div class="rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <span>(5.0)</span>
-                            </div> -->
-                            <p class="text-muted mb-3">Panoramic ocean vistas</p>
-                            <a href="#" class="btn btn-primary w-100">View Details</a>
+                        <img src="c:\Users\TEST PC\Desktop\hrs\hrs\public\images\img3.jpeg" class="card-img-top" alt="Hotel 3">
+                        <div class="card-body text-center">
+                            <h5 class="fw-bold mb-3">Ocean View Paradise</h5>
+                            <a href="#" class="btn btn-primary w-75">View Details</a>
                         </div>
                     </div>
                 </div>
@@ -315,9 +166,9 @@
     </section>
 
     <!-- Map Section -->
-    <section class="map-section py-5" style="background-color: var(--neutral-bg);">
+    <section class="map-section py-5">
         <div class="container">
-            <h2 class="fw-bold text-center mb-4" style="color: var(--primary-color);">Find Hotels Near You</h2>
+            <h2 class="fw-bold text-center mb-4 text-dark">Find Hotels Near You</h2>
             <div class="map-container">
                 <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d242347.1025176785!2d72.74109938496972!3d19.08219783973039!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7b63fd7f264d5%3A0xe4bc053ecbd3a60b!2sMumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1621843638353!5m2!1sen!2sin" allowfullscreen="" loading="lazy" style="border:0; width: 100%; height: 100%;"></iframe>
             </div>
@@ -327,11 +178,10 @@
     <!-- Footer -->
     <footer class="py-4">
         <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
-            <p class="mb-0 fw-semibold">© 2025 HotelRecommender. All rights reserved.</p>
-            <div class="d-flex gap-4 mt-3 mt-md-0">
-                <a href="#" class="text-decoration-none">Privacy Policy</a>
-                <a href="#" class="text-decoration-none">Terms of Service</a>
-                <a href="#" class="text-decoration-none">Contact Us</a>
+            <p class="mb-0 fw-semibold">© 2025 HotelRecommender</p>
+            <div class="d-flex gap-3">
+                <a href="#" class="text-white text-decoration-none">Privacy Policy</a>
+                <a href="#" class="text-white text-decoration-none">Contact Us</a>
             </div>
         </div>
     </footer>
@@ -340,3 +190,4 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
