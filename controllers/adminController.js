@@ -15,6 +15,23 @@ exports.showUserMaster = async (req, res) => {
 };
 
 
-exports.deleteUser=(req, res) =>{
+// dlete user
+exports.deleteUser = (req, res) => {
+  const userId = req.params.id;
+
+
+  db.query('DELETE FROM usermaster WHERE userid = ?', [userId], (err, result) => {
+    if (err) {
+      console.error('Error deleting user:', err);
+      return res.status(500).send('Error deleting user');
+    }
+
+
+
+    res.redirect('/admin/usermaster');
+  });
+};
+
   
-}
+
+// hotel add 

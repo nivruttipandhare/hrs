@@ -37,9 +37,7 @@
 
 <body>
   <!-- Admin Dashboard Include -->
-  <%- include('../adminDashboard', { user: user }) %>
-    <small><%= user.username %></small>
-
+  <%- include('../adminDashboard') %>
   <div class="container">
     <div class="page-header text-center">
       <h2>Usermaster Table</h2>
@@ -74,7 +72,7 @@
                 <td><%= user.contact %></td>
                 <td><%= user.type %></td>
                 <td>
-                  <form method="POST" action="/admin/delete-user/<%= user.userid %>" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                  <form method="POST" action="<%/admin/delete-user/<%= user.userid %>" onsubmit="return confirm('Are you sure you want to delete this user?');">
                     <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                   </form>
                 </td>
