@@ -15,8 +15,15 @@ router.get('/login', (req, res) => {
   res.render('login', { message: null });
 });
 
-// Login form submission (POST)
-router.post('/login', authController.login);
+router.get('/user/dashboard', (req, res) => {
+  if (!req.session.user) {
+    return res.redirect('/login');
+  }
+
+  res.render('userDashboard', { user: req.session.user });
+});
+
+
 
 // Logout route (optional)
 router.get('/logout', (req, res) => {
