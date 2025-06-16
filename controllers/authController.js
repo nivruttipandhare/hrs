@@ -1,5 +1,6 @@
 const db = require('../config/db');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 // ✅ REGISTER CONTROLLER
 exports.register = async (req, res) => {
@@ -14,17 +15,14 @@ exports.register = async (req, res) => {
       (err) => {
         if (err) {
           console.error("Registration DB Error:", err);
-          return res.render('register', { message: 'Registration Failed' });
+          return res.status(500).json({ message: 'Registration Failed' });
         }
-
-        // ✅ Redirect to login page after successful registration
-        console.log("Redirecting to login page...");
         return res.redirect('/login');
       }
     );
   } catch (error) {
     console.error("Registration Error:", error);
-    return res.render('register', { message: 'Error in registration' });
+    return res.status(500).json({ message: 'Error in registration' });
   }
 };
 
@@ -37,37 +35,27 @@ exports.login = (req, res) => {
   db.query(sql, [useremail], async (err, results) => {
     if (err) {
       console.error("Login DB Error:", err);
-      return res.render('login', { message: 'Database error' });
+      return res.status(500).json({ message: 'Database error' });
     }
 
     if (results.length === 0) {
-      return res.render('login', { message: 'User not found' });
+      return res.status(401).json({ message: 'User not found' });
     }
 
     const user = results[0];
-
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.render('login', { message: 'Incorrect password' });
+      return res.status(401).json({ message: 'Incorrect password' });
     }
 
-    // ✅ Store session
+    // ✅ Store user in session
     req.session.user = {
-      id: user.id,
+      userid: user.userid,
       username: user.username,
-      type: user.type, // storing 'user' or 'admin'
+      type: user.type
     };
 
-    // ✅ Redirect based on user type
-    try {
-      if (user.type === 'admin') {
-        return res.redirect('/admin/dashboard');
-      } else {
-        return res.redirect('/user/dashboard');
-      }
-    } catch (err) {
-      console.error("Redirect Error:", err);
-      return res.render('login', { message: 'Server error during login' });
-    }
+    // ✅ Redirect to userDashboard after login
+    res.redirect('/user/dashboard');
   });
 };
