@@ -1,23 +1,16 @@
+// routes/adminRoutes.js
 const express = require('express');
 const router = express.Router();
-const db = require('../config/db'); // your DB connection, adjust if path differs
+const adminController = require('../controllers/adminController');
 
-router.get('/dashboard', async (req, res) => {
-  try {
-    // Fetch total users and hotels from DB
-    const [userResult] = await db.query('SELECT COUNT(*) AS totalUsers FROM usermaster');
-    const [hotelResult] = await db.query('SELECT COUNT(*) AS totalHotels FROM hotelmaster');
+// ✅ Admin dashboard
+router.get('/dashboard', adminController.showDashboard);
 
-    const dashboardStats = {
-      totalUsers: userResult[0].totalUsers,
-      totalHotels: hotelResult[0].totalHotels,
-    };
+// ✅ UserMaster data route (for AJAX partial loading)
+router.get('/usermaster', adminController.showUserMaster);
 
-    res.render('adminDashboard', { dashboardStats }); // ✅ pass to EJS
-  } catch (err) {
-    console.error('Error loading dashboard:', err);
-    res.status(500).send('Dashboard loading failed');
-  }
-});
+
+//delete 
+router.post('/delete-user/:id', adminController.deleteUser);
 
 module.exports = router;
