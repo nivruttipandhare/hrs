@@ -17,7 +17,7 @@ exports.register = async (req, res) => {
           console.error("Registration DB Error:", err);
           return res.status(500).json({ message: 'Registration Failed' });
         }
-        return res.status(201).json({ message: 'User registered successfully' });
+        return res.redirect('/login');
       }
     );
   } catch (error) {
@@ -48,13 +48,14 @@ exports.login = (req, res) => {
       return res.status(401).json({ message: 'Incorrect password' });
     }
 
-    // ✅ Generate JWT Token
-    const token = jwt.sign(
-      { userid: user.userid, username: user.username, type: user.type },
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' }
-    );
+    // ✅ Store user in session
+    req.session.user = {
+      userid: user.userid,
+      username: user.username,
+      type: user.type
+    };
 
-    return res.json({ token });
+    // ✅ Redirect to userDashboard after login
+    res.redirect('/user/dashboard');
   });
 };
