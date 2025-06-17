@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Amenities</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+</head>
+<body>
+   <!-- Admin Dashboard Include -->
+    <!-- ✅ Correct Include -->
+  <%- include('../adminDashboard', { user: user }) %>
+
+
+    <small><%= user.username %></small>
+  <div class="container mt-5">
+    <h2 class="mb-4">Amenity Master</h2>
+
+    <!-- Add Amenity Form -->
+    <form action="/admin/add-amenity" method="POST" class="mb-4">
+      <div class="row">
+        <div class="col-md-8">
+          <input type="text" name="amenity_name" class="form-control" placeholder="Enter Amenity Name" required>
+        </div>
+        <div class="col-md-4">
+          <button type="submit" class="btn btn-primary w-100">Add Amenity</button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Search Form -->
+    <form method="GET" action="/admin/amenities" class="mb-4">
+      <div class="row">
+        <div class="col-md-8">
+          <input type="text" name="search" class="form-control" placeholder="Search Amenity" value="<%= search || '' %>">
+        </div>
+        <div class="col-md-4">
+          <button type="submit" class="btn btn-secondary w-100">Search</button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Amenities Table -->
+    <table class="table table-bordered">
+      <thead class="table-light">
+        <tr>
+          <th>ID</th>
+          <th>Amenity Name</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (amenities.length === 0) { %>
+          <tr><td colspan="3" class="text-center">No amenities found.</td></tr>
+        <% } else { %>
+          <% amenities.forEach(amenity => { %>
+            <tr>
+              <td><%= amenity.amenity_id %></td>
+              <td><%= amenity.amenity_name %></td>
+              <td>
+                <form action="/admin/delete-amenity/<%= amenity.amenity_id %>" method="POST" onsubmit="return confirm('Delete this amenity?');">
+                  <button class="btn btn-danger btn-sm">Delete</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

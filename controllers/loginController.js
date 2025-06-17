@@ -1,7 +1,7 @@
 const db = require('../config/db');
 const bcrypt = require('bcrypt');
 
-// ✅ LOGIN CONTROLLER
+//  LOGIN CONTROLLER
 exports.login = async (req, res) => {
   const { useremail, password } = req.body;
 
@@ -32,9 +32,9 @@ exports.login = async (req, res) => {
 
     // ✅ Redirect based on user type
     if (user.type === 'admin') {
-      return res.redirect('/admin/dashboard');
+      return res.redirect('/admin/ashboard');
     } else {
-      return res.redirect('/user/dashboard');
+      return res.redirect('/user/ashboard');
     }
   });
 };

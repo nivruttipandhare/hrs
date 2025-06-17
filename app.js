@@ -1,38 +1,59 @@
+// ===== 📁 app.js =====
 const express = require('express');
-const path = require('path');
 const session = require('express-session');
-const userRoutes = require('./routes/userRoutes');
-const adminRoutes = require('./routes/adminRoutes');
+const path = require('path');
+const fs = require('fs');
+const methodOverride = require('method-override');
 
 const app = express();
 
+// Routes
+const authRoutes = require('./routes/authRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const userRoutes = require('./routes/userRoutes');
+const hotelMasterRoutes = require('./routes/hotelMasterRoutes');
+const userDashboardRoutes = require('./routes/userDashboardRoutes');
+
 // Middleware
+app.use(methodOverride('_method'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
 
-// Set EJS as the templating engine
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-
-// Setup session
 app.use(session({
-  secret: 'yoursecretkey',
+  secret: 'YourSecretKey123',
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: true
 }));
 
-// Mount routes (so /login, /register, /user/dashboard work directly)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/bootstrap', express.static(path.join(__dirname, 'node_modules/bootstrap/dist')));
+
+const uploadPath = path.join(__dirname, 'public/uploads');
+if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath, { recursive: true });
+
+// ✅ Route definitions (before 404)
+app.use('/', authRoutes);
 app.use('/', userRoutes);
-app.use('/', adminRoutes);
+app.use('/admin', adminRoutes);
+app.use('/admin', hotelMasterRoutes);
+app.use('/admin/hotelMaster', hotelMasterRoutes);
+app.use('/', userDashboardRoutes);
+app.use('/admin/bookings', userDashboardRoutes);
+app.use('/user', userDashboardRoutes);
+app.use('/', userDashboardRoutes);
 
-// Default route → redirect to login
+// Optional: Root route
 app.get('/', (req, res) => {
-  res.redirect('/login');
+  res.redirect('/user/dashboard');
 });
 
-// Server start
-const PORT = 3500;
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+// ✅ Catch-all 404 after all valid routes
+app.use((req, res, next) => {
+  res.status(404).send('Route not found: ' + req.originalUrl);
 });
+
+const PORT = 3500;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

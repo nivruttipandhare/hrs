@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Area Master</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+</head>
+<body>
+  <%- include('../adminDashboard', { user: user }) %>
+
+
+  <div class="container mt-3">
+    <h2 class="mb-4">Area Master</h2>
+
+    <!-- ✅ Add Area Form -->
+    <form action="/admin/add-area" method="POST" class="mb-4">
+      <div class="row">
+        <div class="col-md-8">
+          <input type="text" name="area_name" class="form-control" placeholder="Enter Area Name" required>
+        </div>
+        <div class="col-md-4">
+          <button type="submit" class="btn btn-primary w-100">Add Area</button>
+        </div>
+      </div>
+    </form>
+
+    <!-- ✅ Search Form -->
+    <form method="GET" action="/admin/area" class="mb-4">
+      <div class="row">
+        <div class="col-md-8">
+          <input type="text" name="search" class="form-control" placeholder="Search Area" value="<%= search || '' %>">
+        </div>
+        <div class="col-md-4">
+          <button type="submit" class="btn btn-secondary w-100">Search</button>
+        </div>
+      </div>
+    </form>
+
+    <!-- ✅ Area Table -->
+    <table class="table table-bordered">
+      <thead class="table-light">
+        <tr>
+          <th>Area ID</th>
+          <th>Area Name</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (!areas || areas.length === 0) { %>
+          <tr>
+            <td colspan="3" class="text-center">No areas found.</td>
+          </tr>
+        <% } else { %>
+          <% areas.forEach(area => { %>
+            <tr>
+              <td><%= area.area_id %></td>
+              <td><%= area.area_name %></td>
+              <td>
+                <form action="/admin/delete-area/<%= area.area_id %>" method="POST" onsubmit="return confirm('Are you sure you want to delete this area?');">
+                  <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+              </td>
+            </tr>
+          <% }); %>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+</body>
+</html>
