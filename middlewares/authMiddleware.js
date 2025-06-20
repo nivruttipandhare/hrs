@@ -2,21 +2,42 @@
 const jwt = require('jsonwebtoken');
 const secretKey = process.env.JWT_SECRET || 'your_secret_key';
 
-const verifyToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (!token) {
-    return res.status(401).json({ message: 'Access Denied. No Token Provided.' });
+// ✅ SESSION Middleware
+function isLoggedIn(req, res, next) {
+  if (req.session && req.session.userId) {
+    return next();
+  } else {
+    req.session.redirectTo = req.originalUrl;
+    return res.redirect('/login');
   }
+}
 
-  jwt.verify(token, secretKey, (err, decoded) => {
-    if (err) {
-      return res.status(403).json({ message: 'Invalid Token.' });
-    }
-    req.user = decoded;
-    next();
+// ✅ JWT Middleware using Promise + async/await style
+function verifyToken(token, secret) {
+  return new Promise((resolve, reject) => {
+    jwt.verify(token, secret, (err, decoded) => {
+      if (err) reject(err);
+      else resolve(decoded);
+    });
   });
+}
+
+const authMiddleware = async (req, res, next) => {
+  const token = req.headers['authorization']?.split(' ')[1]; // Bearer <token>
+  if (!token) return res.status(401).json({ message: 'Access Denied. No Token Provided.' });
+
+  verifyToken(token, secretKey)
+    .then(decoded => {
+      req.user = decoded;
+      next();
+    })
+    .catch(() => {
+      res.status(403).json({ message: 'Invalid Token.' });
+    });
 };
 
-module.exports = verifyToken;
+// ✅ EXPORT BOTH
+module.exports = {
+  isLoggedIn,
+  authMiddleware
+};

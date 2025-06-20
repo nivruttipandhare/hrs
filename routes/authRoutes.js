@@ -20,5 +20,26 @@ router.get('/logout', (req, res) => {
   });
 });
 
+
+router.post('/login', (req, res) => {
+  const { username, password } = req.body;
+
+  db.query('SELECT * FROM usermaster WHERE username = ? AND password = ?', [username, password], (err, result) => {
+    if (err) return res.send('Database error');
+    
+    if (result.length > 0) {
+      req.session.userId = result[0].userid;
+
+      // 🔄 Optional: redirect to original page or default
+      const redirectTo = req.session.redirectTo || '/user/hotelRecom';
+      delete req.session.redirectTo;
+      return res.redirect(redirectTo);
+    } else {
+      res.send('Invalid credentials');
+    }
+  });
+});
+
+
 module.exports = router;
 

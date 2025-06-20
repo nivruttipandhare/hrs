@@ -51,6 +51,9 @@ const hotelRoomJoinRoutes = require('./routes/hotelRoomJoinRoutes');
 const reviewRoutes = require('./routes/reviewRoutes'); // path must be correct
 app.use('/', reviewRoutes); // mounted on "/"
 
+//hotelRecom
+const hotelRecomRoutes = require('./routes/hotelRecomRoutes');
+app.use('/', hotelRecomRoutes);
 
 app.use('/admin/hotelMaster', hotelMasterRoutes);
 // ✅ Use Routes
