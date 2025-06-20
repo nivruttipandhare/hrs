@@ -26,22 +26,27 @@ function getVector(tfidf, index, vocabulary) {
 async function recommendHotelsByUser(userId, topN = 5) {
   return new Promise((resolve, reject) => {
     const query = `
-      SELECT 
-        h.hotel_id, h.hotel_name, h.hotel_image, h.rating, h.reviewcount,
-        c.city_name, a.area_name,
-        GROUP_CONCAT(DISTINCT am.amenity_name) AS amenities,
-        GROUP_CONCAT(DISTINCT rm.room_type) AS room_types,
-        'standard' AS type,
-        (b.userid IS NOT NULL) AS is_booked_by_user
-      FROM hotelmaster h
-      JOIN citymaster c ON h.city_id = c.city_id
-      JOIN areamaster a ON h.area_id = a.area_id
-      LEFT JOIN hotelamenitiesjoin ha ON h.hotel_id = ha.hotel_id
-      LEFT JOIN amenities am ON ha.amenity_id = am.amenity_id
-      LEFT JOIN hotelroomjoin hr ON h.hotel_id = hr.hotel_id
-      LEFT JOIN roomsmaster rm ON hr.room_id = rm.room_id
-      LEFT JOIN bookingmaster b ON b.hotel_id = h.hotel_id AND b.userid = ?
-      GROUP BY h.hotel_id;
+     SELECT
+  h.hotel_id,
+  h.hotel_name,
+  h.hotel_image,
+  h.rating,
+  h.reviewcount,
+  c.city_name,
+  a.area_name,
+  GROUP_CONCAT(DISTINCT am.amenity_name) AS amenities,
+  GROUP_CONCAT(DISTINCT rm.room_type) AS room_types,
+  'standard' AS type,
+  (b.userid IS NOT NULL) AS is_booked_by_user
+FROM hotelmaster h
+JOIN citymaster c ON h.city_id = c.city_id
+JOIN areamaster a ON h.area_id = a.area_id
+LEFT JOIN hotelamenitiesjoin ha ON h.hotel_id = ha.hotel_id
+LEFT JOIN amenities am ON ha.amenity_id = am.amenity_id
+LEFT JOIN hotelroomjoin hr ON h.hotel_id = hr.hotel_id
+LEFT JOIN roomsmaster rm ON hr.room_id = rm.room_id
+LEFT JOIN bookingmaster b ON b.hotel_id = h.hotel_id AND b.userid = ?
+GROUP BY h.hotel_id;
     `;
 
     conn.query(query, [userId], (err, hotels) => {

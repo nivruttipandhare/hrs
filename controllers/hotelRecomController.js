@@ -9,6 +9,8 @@ const getRecommendations = async (req, res) => {
     res.render('user/hotelRecom', { recommendations });
   } catch (err) {
     console.error('Recommendation error:', err);
+    res.render('user/hotelRecom', { recommendations });
+
     res.status(500).send('Error loading recommendations');
   }
 };

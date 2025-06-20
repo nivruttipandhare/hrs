@@ -53,7 +53,7 @@ app.use('/', reviewRoutes); // mounted on "/"
 
 //hotelRecom
 const hotelRecomRoutes = require('./routes/hotelRecomRoutes');
-app.use('/user', hotelRecomRoutes);
+app.use('/', hotelRecomRoutes);
 
 app.use('/admin/hotelMaster', hotelMasterRoutes);
 // ✅ Use Routes
