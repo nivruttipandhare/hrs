@@ -1,8 +1,8 @@
 const db = require('../config/db');
 const bcrypt = require('bcrypt');
 
-// ✅ LOGIN CONTROLLER
-exports.login = (req, res) => {
+//  LOGIN CONTROLLER
+exports.login = async (req, res) => {
   const { useremail, password } = req.body;
 
   const sql = 'SELECT * FROM usermaster WHERE useremail = ?';
@@ -30,7 +30,11 @@ exports.login = (req, res) => {
       type: user.type
     };
 
-    // ✅ Redirect to userDashboard after login
-    return res.redirect('/user/dashboard');
+    // ✅ Redirect based on user type
+    if (user.type === 'admin') {
+      return res.redirect('/admin/ashboard');
+    } else {
+      return res.redirect('/user/ashboard');
+    }
   });
 };

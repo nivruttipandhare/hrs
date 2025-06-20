@@ -1,15 +1,14 @@
-const mysql = require("mysql2");
+// config/db.js
+const mysql = require('mysql2');
 
-const connection = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "coder",   // replace with your MySQL password
-  database: "hotel"
+const pool = mysql.createPool({
+  host: 'localhost',
+  user: 'root',
+  password: 'coder',       // your MySQL password
+  database: 'hotel',    // your DB name
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
 });
 
-connection.connect(err => {
-  if (err) throw err;
-  console.log("MySQL connected");
-});
-
-module.exports = connection;
+module.exports = pool;

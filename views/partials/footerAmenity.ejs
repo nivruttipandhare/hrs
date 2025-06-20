@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <footer class="bg-dark text-light py-4">
+        <%- include('../partials/footer') %>
+
+  <div class="container">
+    <h5 class="mb-3">Available Amenities</h5>
+    <ul class="list-group list-group-flush">
+      <% footerAmenities.forEach(amenity => { %>
+        <li class="list-group-item bg-dark text-light border-0">
+          ✓ <%= amenity.amenity_name %>
+        </li>
+      <% }); %>
+    </ul>
+  </div>
+</footer>
+
+</body>
+</html>
