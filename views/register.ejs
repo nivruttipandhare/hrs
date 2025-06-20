@@ -9,7 +9,7 @@
     body {
       margin: 0;
       padding: 0;
-      background-image: url('https://images.unsplash.com/photo-1542314831-068cd1dbfeeb'); /* Hotel background */
+      background-image: url('https://images.unsplash.com/photo-1542314831-068cd1dbfeeb');
       background-size: cover;
       background-position: center;
       height: 100vh;
@@ -71,29 +71,45 @@
   <div class="glass-box">
     <h2 class="text-center mb-4">Register</h2>
 
+    <!-- Success/Error Message -->
+    <% if (typeof message !== 'undefined' && message) { %>
+      <div class="alert alert-info text-center">
+        <%= message %>
+      </div>
+    <% } %>
+
     <form method="POST" action="/register">
       <!-- Username -->
       <div class="mb-4">
         <label for="username" class="form-label">Username</label>
-        <input type="text" class="form-control" id="username" name="username" placeholder="Enter Username" required>
+        <input type="text" class="form-control" id="username" name="username"
+               
+               
+               placeholder="Enter Username" required>
       </div>
 
       <!-- Email -->
       <div class="mb-4">
         <label for="useremail" class="form-label">Email address</label>
-        <input type="email" class="form-control" id="useremail" name="useremail" placeholder="Enter Email" required>
+        <input type="email" class="form-control" id="useremail" name="useremail"
+               placeholder="Enter Email" required>
       </div>
 
       <!-- Password -->
       <div class="mb-4">
         <label for="password" class="form-label">Password</label>
-        <input type="password" class="form-control" id="password" name="password" placeholder="Enter Password" required>
+        <input type="password" class="form-control" id="password" name="password"
+               
+               placeholder="Enter Password" required>
       </div>
 
       <!-- Contact -->
       <div class="mb-4">
         <label for="contact" class="form-label">Phone Number</label>
-        <input type="tel" class="form-control" id="contact" name="contact" placeholder="Enter Phone Number" pattern="\d{10}" required />
+        <input type="tel" class="form-control" id="contact" name="contact"
+               
+              
+               placeholder="Enter Phone Number" required />
       </div>
 
       <!-- User Type -->

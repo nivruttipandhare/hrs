@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,24 +8,40 @@
 
   <!-- Bootstrap & Icons -->
   <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/fontawesome.min.css">
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/fontawesome.min.css">
+
+  <!-- Bootstrap Icons CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
   <style>
-    * { margin: 0; padding: 0; }
-    body, html {
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    body,
+    html {
       height: 100%;
       overflow: hidden;
       font-family: Arial, sans-serif;
     }
+
     .header {
       position: fixed;
       top: 0;
       width: 100%;
       z-index: 1000;
     }
-    img.rounded-circle { object-fit: cover; }
+
+    img.rounded-circle {
+      object-fit: cover;
+    }
+
     .main {
       display: flex;
       position: absolute;
@@ -32,6 +49,7 @@
       bottom: 40px;
       width: 100%;
     }
+
     .sidebar {
       width: 220px;
       background-color: #6c757d;
@@ -39,31 +57,27 @@
       padding: 20px;
       overflow-y: auto;
     }
-    .sidebar .menu-item { margin: 10px 0; }
+
+    .sidebar .menu-item {
+      margin: 10px 0;
+    }
+
     .sidebar a {
       color: white;
       text-decoration: none;
-      display: block;
     }
+
     .sidebar a:hover {
       text-decoration: underline;
     }
-    .sidebar ul {
-      list-style-type: none;
-      padding-left: 15px;
-    }
-    .sidebar li a {
-      font-size: 14px;
-      display: block;
-      color: white;
-      padding: 3px 0;
-    }
+
     .content {
       flex: 1;
       background-color: #f8f9fa;
       padding: 20px;
       overflow-y: auto;
     }
+
     .footer {
       position: fixed;
       bottom: 0;
@@ -78,13 +92,20 @@
     }
 
     @media (max-width: 768px) {
-      .main { flex-direction: column; }
+      .main {
+        flex-direction: column;
+      }
+
       .sidebar {
         width: 100%;
         height: auto;
         position: static;
       }
-      .content { margin-left: 0; }
+
+      .content {
+        margin-left: 0;
+      }
+
       .footer {
         left: 0;
         width: 100%;
@@ -101,7 +122,7 @@
     </div>
     <div class="col-8 text-center">
       <h5 class="mb-0">Welcome to, Admin</h5>
-      <small><%= user?.username || "Admin" %></small>
+      
     </div>
     <div class="col-2 d-flex justify-content-end">
       <a href="/logout" class="text-danger fs-4" title="Logout"><i class="bi bi-box-arrow-right"></i></a>
@@ -112,45 +133,112 @@
   <div class="main">
     <!-- Sidebar -->
     <div class="sidebar">
-      <div class="menu-item"><a href="#"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></div>
-      <div class="menu-item"><a href="/admin/usermaster"><i class="bi bi-people me-2"></i> Users</a></div>
-      <div class="menu-item"><a href="/admin/hotels"><i class="bi bi-house-heart me-2"></i> Hotels</a></div>
+      <div class="menu-item">
+        <a href="/admin/dashboard" class="text-primary fs-5">
+          <i class="bi bi-speedometer2 me-2"></i> Dashboard
+        </a>
+      </div>
 
       <div class="menu-item">
-        <i class="bi bi-journal-bookmark me-2"></i> Hotel Module
-        <ul>
-          <li><a href="/admin/add-hotel">Add Hotel</a></li>
-          <li><a href="/admin/hotels">View Hotel</a></li>
-        </ul>
+        <a href="/admin/usermaster">
+          <i class="bi bi-people me-2"></i> Users
+        </a>
       </div>
 
-      <div class="menu-item"><a href="#"><i class="bi bi-puzzle me-2"></i> Amenities</a></div>
-      <div class="menu-item"><a href="#"><i class="bi bi-geo-alt me-2"></i> City</a></div>
-      <div class="menu-item"><a href="#"><i class="bi bi-geo me-2"></i> Area</a></div>
-      <div class="menu-item"><a href="#"><i class="bi bi-building me-2"></i> View Hotel</a></div>
-      <div class="menu-item"><a href="#"><i class="bi bi-chat-left-text me-2"></i> Review</a></div>
-      <div class="menu-item"><a href="#"><i class="bi bi-star me-2"></i> Rating</a></div>
-    </div>
 
-    <!-- Content Area -->
-    <div class="content">
-      <h5 class="mb-3">Dashboard Status</h5>
 
-      <!-- Dynamic content area -->
-      <div id="defaultStatusContent">
-        <!-- Optional image or summary -->
+      <div class="menu-item">
+        <a href="/admin/hotelMaster">
+          <i class="bi bi-building me-2"></i> Hotel Master
+        </a>
       </div>
 
-      <div id="mainContent" class="p-3"></div>
+
+
+      <div class="menu-item">
+        <a href="/admin/bookings">
+          <i class="bi bi-journal-bookmark me-2"></i> Booking Hotel
+        </a>
+      </div>
+
+
+
+      <div class="menu-item">
+        <a href="/admin/amenities">
+          <i class="bi bi-puzzle me-2"></i> Amenities
+        </a>
+      </div>
+
+
+      <div class="menu-item">
+        <a href="/admin/city">
+          <i class="bi bi-geo-alt me-2"></i> City
+        </a>
+      </div>
+
+
+      <div class="menu-item">
+        <a href="/admin/area" class="d-flex align-items-center">
+          <i class="bi bi-geo me-2"></i> Area
+        </a>
+      </div>
+
+
+
+
+      <div class="menu-item">
+        <a href="/admin/reviews">
+          <i class="bi bi-chat-left-text me-2"></i> Reviews
+        </a>
+      </div>
+
+
+      
+ <div class="menu-item">
+  <a href="/admin/rooms" class="d-flex align-items-center">
+    <i class="bi bi-door-closed me-2 text-primary fs-5"></i> 
+    <span class="text-light">Rooms</span>
+  </a>
+</div>
+
+
+
+<div class="menu-item">
+  <a href="/admin/hotelRooms" class="d-flex align-items-center">
+    <i class="bi bi-receipt me-2 text-primary fs-5"></i> 
+    <span class="text-light">Hotel Room</span>
+  </a>
+</div>
+
+
+  </div>
+
+  <!-- Content Area -->
+  <div class="content">
+    <h5 class="mb-3">Dashboard Status</h5>
+
+    <!-- Default Dashboard Image -->
+    <div id="defaultStatusContent">
+      <!-- <img class="h-75 rounded-pill w-75" src="/images/icon2.png" alt="Dashboard Image"> -->
     </div>
-  </div>
 
-  <!-- Footer -->
-  <div class="footer">
-    &copy; 2025 Admin Panel. All rights reserved.
-  </div>
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- user master -->
+    <div id="mainContent" class="p-3"></div>
+
+
+    <!-- Footer -->
+    <div class="footer">
+      &copy; 2025 Admin Panel. All rights reserved.
+    </div>
+
+    <!-- JS Script for Toggling Sections -->
+
+
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

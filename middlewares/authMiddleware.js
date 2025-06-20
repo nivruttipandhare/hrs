@@ -1,19 +1,22 @@
-exports.isAuthenticated = (req, res, next) => {
-  if (req.session.user) {
-    return next();
+// middlewares/authMiddleware.js
+const jwt = require('jsonwebtoken');
+const secretKey = process.env.JWT_SECRET || 'your_secret_key';
+
+const verifyToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ message: 'Access Denied. No Token Provided.' });
   }
-  res.redirect("/login");
+
+  jwt.verify(token, secretKey, (err, decoded) => {
+    if (err) {
+      return res.status(403).json({ message: 'Invalid Token.' });
+    }
+    req.user = decoded;
+    next();
+  });
 };
-
-
-
-exports.isAdmin = (req, res, next) => {
-  if (req.session.user && req.session.user.type === 'admin') {
-    return next();
-  }
-  res.status(403).render('unauthorized', { message: 'Admins only!' });
-};
-
-
 
 module.exports = verifyToken;

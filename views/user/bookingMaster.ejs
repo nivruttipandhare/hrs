@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hotel Bookings</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <style>
+    body {
+      background: #f2f9ff;
+    }
+    table thead {
+      background: #198754;
+      color: white;
+    }
+    .pagination {
+      justify-content: center;
+    }
+    .search-bar {
+      max-width: 400px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container my-5">
+    <h2 class="text-center mb-4 text-success">All Hotel Bookings</h2>
+
+    <div class="d-flex justify-content-between mb-3">
+      <input type="text" id="searchInput" class="form-control search-bar" placeholder="🔍 Search bookings...">
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-hover table-bordered text-center" id="bookingTable">
+        <thead>
+          <tr>
+            <th>Booking ID</th>
+            <th>Username</th>
+            <th>Hotel</th>
+            <th>Booking Date</th>
+            <th>Check-In</th>
+            <th>Check-Out</th>
+            <th>Check-In Time</th>
+            <th>Check-Out Time</th>
+          </tr>
+        </thead>
+        <tbody id="bookingBody">
+          <% bookings.forEach(booking => { %>
+            <tr>
+              <td><%= booking.booking_id %></td>
+              <td><%= booking.username %></td>
+              <td><%= booking.hotel_name %></td>
+              <td><%= booking.booking_date %></td>
+              <td><%= booking.checkin_date %></td>
+              <td><%= booking.checkout_date %></td>
+              <td><%= booking.checkin_time %></td>
+              <td><%= booking.checkout_time %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <nav>
+      <ul class="pagination" id="pagination"></ul>
+    </nav>
+  </div>
+
+  <script>
+    const rowsPerPage = 5;
+    const table = document.getElementById("bookingTable");
+    const tbody = document.getElementById("bookingBody");
+    const pagination = document.getElementById("pagination");
+    const searchInput = document.getElementById("searchInput");
+
+    let currentPage = 1;
+    let rows = Array.from(tbody.querySelectorAll("tr"));
+
+    function renderTable() {
+      tbody.innerHTML = "";
+      const filteredRows = rows.filter(row =>
+        row.innerText.toLowerCase().includes(searchInput.value.toLowerCase())
+      );
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+      filteredRows.slice(start, end).forEach(row => tbody.appendChild(row));
+      renderPagination(filteredRows.length);
+    }
+
+    function renderPagination(totalRows) {
+      pagination.innerHTML = "";
+      const totalPages = Math.ceil(totalRows / rowsPerPage);
+
+      for (let i = 1; i <= totalPages; i++) {
+        const li = document.createElement("li");
+        li.className = `page-item ${i === currentPage ? "active" : ""}`;
+        li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+        li.addEventListener("click", (e) => {
+          e.preventDefault();
+          currentPage = i;
+          renderTable();
+        });
+        pagination.appendChild(li);
+      }
+    }
+
+    searchInput.addEventListener("input", () => {
+      currentPage = 1;
+      renderTable();
+    });
+
+    renderTable();
+  </script>
+</body>
+</html>

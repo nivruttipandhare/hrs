@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Room Master</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<%- include('../adminDashboard') %>
+
+<div class="container my-5">
+  <h2 class="text-center mb-4 text-primary">Room Master</h2>
+
+  <!-- ADD ROOM FORM -->
+  <form action="rooms/add" method="POST" class="row g-3 mb-4">
+    <div class="col-md-6">
+      <input type="text" name="room_type" class="form-control" placeholder="Enter Room Type" required>
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-success w-100">Add Room</button>
+    </div>
+  </form>
+
+  <!-- ROOMS TABLE -->
+  <table class="table table-bordered table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>Room ID</th>
+        <th>Room Type</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (rooms.length === 0) { %>
+        <tr>
+          <td colspan="3" class="text-center text-danger">No rooms found.</td>
+        </tr>
+      <% } else { %>
+        <% rooms.forEach(room => { %>
+          <tr>
+            <td><%= room.room_id %></td>
+            <td><%= room.room_type %></td>
+            <td>
+              <!-- Edit Button -->
+              <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editModal<%= room.room_id %>">Edit</button>
+
+              <!-- Delete Button -->
+              <form action="/admin/rooms/delete/<%= room.room_id %>" method="POST" class="d-inline">
+                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this room?')">Delete</button>
+              </form>
+            </td>
+          </tr>
+
+          <!-- Edit Modal -->
+          <div class="modal fade" id="editModal<%= room.room_id %>" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+              <form action="/admin/rooms/update/<%= room.room_id %>" method="POST" class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Edit Room</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <input type="text" name="room_type" class="form-control" value="<%= room.room_type %>" required>
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-success">Update</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        <% }); %>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

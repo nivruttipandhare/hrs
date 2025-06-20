@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hotel Room Join</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+ <%- include('../adminDashboard')%>
+<div class="container my-5">
+  <h2 class="text-center text-primary">Hotel Room Price Management</h2>
+
+  <!-- ✅ ADD FORM -->
+  <form action="/admin/hotelRooms/add" method="POST" class="row g-3 mb-4">
+    <div class="col-md-3">
+      <select name="hotel_id" class="form-select" required>
+        <option value="">Select Hotel</option>
+        <% hotels.forEach(h => { %>
+          <option value="<%= h.hotel_id %>"><%= h.hotel_name %></option>
+        <% }); %>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <select name="room_id" class="form-select" required>
+        <option value="">Select Room</option>
+        <% rooms.forEach(r => { %>
+          <option value="<%= r.room_id %>"><%= r.room_type %></option>
+        <% }); %>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <input type="number" name="price" class="form-control" placeholder="Enter Price" required>
+    </div>
+
+    <div class="col-md-3">
+      <button type="submit" class="btn btn-success w-100">Add</button>
+    </div>
+  </form>
+
+  <!-- ✅ TABLE LIST -->
+  <table class="table table-bordered table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>Hotel Name</th>
+        <th>Room Type</th>
+        <th>Price</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (hotelRooms.length === 0) { %>
+        <tr>
+          <td colspan="4" class="text-center text-danger">No records found.</td>
+        </tr>
+      <% } else { %>
+        <% hotelRooms.forEach(room => { %>
+          <tr>
+            <td><%= room.hotel_name %></td>
+            <td><%= room.room_type %></td>
+            <td><%= room.price %></td>
+            <td>
+              <!-- EDIT -->
+              <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editModal<%= room.hotel_id %>_<%= room.room_id %>">Edit</button>
+
+              <!-- DELETE -->
+              <form action="/admin/hotelRooms/delete/<%= room.hotel_id %>/<%= room.room_id %>" method="POST" class="d-inline">
+                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this entry?')">Delete</button>
+              </form>
+            </td>
+          </tr>
+
+          <!-- ✅ EDIT MODAL -->
+          <div class="modal fade" id="editModal<%= room.hotel_id %>_<%= room.room_id %>" tabindex="-1">
+            <div class="modal-dialog">
+              <form action="/admin/hotelRooms/update/<%= room.hotel_id %>/<%= room.room_id %>" method="POST" class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Edit Room Price</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  <input type="number" name="price" class="form-control" value="<%= room.price %>" required>
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-success">Update</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        <% }); %>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+
+<!-- ✅ Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
