@@ -101,6 +101,12 @@
     .card-text strong {
       color: #495057;
     }
+
+    .hover-shadow:hover {
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.3s ease-in-out;
+}
+
   </style>
 </head>
 <body>
@@ -114,7 +120,7 @@
  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
     <a class="navbar-brand" href="/">Hotel Finder</a>
-
+     <a class="navbar-brand" href="/user/hotelRecom"> Hotel Recommendation</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -129,6 +135,7 @@
           <li class="nav-item">
             <a href="/register" class="btn btn-success btn-sm">Register</a>
           </li>
+          
         <% } else { %>
           <!-- If user is logged in -->
           <li class="nav-item me-3 text-white">
@@ -222,41 +229,7 @@
     </div>
   </div>
 
-  <div class="container my-5">
-    <h2 class="text-center mb-4 text-success">All Hotel Bookings</h2>
-    <% if (typeof bookingError !== 'undefined' && bookingError) { %>
-      <div class="alert alert-danger text-center"><%= bookingError %></div>
-    <% } %>
-    <div class="row">
-      <% if (bookings && Array.isArray(bookings) && bookings.length) { %>
-        <% bookings.forEach(booking => { %>
-          <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm">
-              <% if (booking.hotel_image) { %>
-                <img src="/Uploads/hotels/<%= booking.hotel_image %>" class="card-img-top" alt="Hotel Image" style="height: 200px; object-fit: cover;">
-              <% } else { %>
-                <img src="https://via.placeholder.com/400x200?text=No+Image" class="card-img-top" alt="No Image Available" style="height: 200px; object-fit: cover;">
-              <% } %>
-              <div class="card-body">
-                <h5 class="card-title text-primary"><%= booking.hotel_name || 'Unknown Hotel' %></h5>
-                <p class="card-text">
-                  <strong>User:</strong> <%= booking.username || 'N/A' %><br>
-                  <strong>Booking Date:</strong> <%= booking.booking_date ? new Date(booking.booking_date).toLocaleDateString() : 'N/A' %><br>
-                  <strong>Check-In:</strong> <%= booking.checkin_date ? new Date(booking.checkin_date).toLocaleDateString() : 'N/A' %> at <%= booking.checkin_time || 'N/A' %><br>
-                  <strong>Check-Out:</strong> <%= booking.checkout_date ? new Date(booking.checkout_date).toLocaleDateString() : 'N/A' %> at <%= booking.checkout_time || 'N/A' %>
-                </p>
-              </div>
-            </div>
-          </div>
-        <% }) %>
-      <% } else { %>
-        <div class="col-12 text-center">
-          <p class="text-muted">No bookings found.</p>
-        </div>
-      <% } %>
-    </div>
-  </div>
-
+ 
   <div class="modal fade" id="viewDetailsModal" tabindex="-1" aria-labelledby="viewDetailsModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-sm">
       <div class="modal-content">
@@ -327,31 +300,48 @@
     </div>
   </div>
 
-  <footer>
-  <div class="container footer-content">
-    <!-- ✅ Review Modal Trigger Button -->
-    <div class="container mb-4 d-flex justify-content-center">
-  <div class="card shadow-sm border-0 p-4" style="max-width: 500px; width: 100%;">
-    <h4 class="text-primary text-center mb-3">User Review</h4>
-    <blockquote class="blockquote text-center mb-4">
-      <p class="mb-0">“We finally have full control over room pricing.<br>
-        It’s fast, easy, and incredibly reliable—<br>
-        everything an admin tool should be.”</p>
-      <footer class="blockquote-footer mt-2">Happy Hotelier</footer>
-    </blockquote>
-    <div class="text-center">
-      <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#reviewModal">
-        <i class="bi bi-chat-left-text me-1"></i> Add Your Review
-      </button>
-    </div>
-  </div>
-</div>
+ <footer class="bg-dark py-5 border-top">
+  <div class="container">
 
+    <!-- ✅ 3 Equal-Height Columns -->
+    <div class="row text-center g-4">
+
+      <!-- ✅ Review Card -->
+      <div class="col-md-4 d-flex align-items-stretch">
+        <div class="card w-100 shadow-sm border-0 p-4 hover-shadow">
+          <h5 class="text-primary mb-3">User Review</h5>
+          <blockquote class="blockquote">
+            <p>“We finally have full control over room pricing. It’s fast, easy, and incredibly reliable.”</p>
+            <footer class="blockquote-footer">Happy Hotelier</footer>
+          </blockquote>
+          <button class="btn btn-outline-primary mt-3" data-bs-toggle="modal" data-bs-target="#reviewModal">
+            <i class="bi bi-chat-left-text me-1"></i> Add Your Review
+          </button>
+        </div>
+      </div>
+
+      <!-- ✅ Location -->
+      <div class="col-md-4 d-flex align-items-stretch">
+        <div class="card w-100 shadow-sm border-0 p-4 hover-shadow">
+          <h5 class="text-primary mb-3">Our Location</h5>
+          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3784.0543411943477!2d73.80041667405766!3d18.48119758260473!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2bfeb853d4691%3A0x56f1a2e46627167!2sGiri&#39;s%20TECH%20HUB%20Pvt%20Ltd!5e0!3m2!1sen!2sin!4v1750421191622!5m2!1sen!2sin" width="150" height="50" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+      </div>
+
+      <!-- ✅ Contact Info -->
+      <div class="col-md-4 d-flex align-items-stretch">
+        <div class="card w-100 shadow-sm border-0 p-4 hover-shadow">
+          <h5 class="text-primary mb-3">Contact</h5>
+          <p class="mb-1">📧 <a href="mailto:support@hotelfinder.com" class="text-decoration-none text-dark">support@hotelfinder.com</a></p>
+          <p class="mb-0">📞 <a href="tel:+919876543210" class="text-decoration-none text-dark">+91 98765 43210</a></p>
+        </div>
+      </div>
+    </div>
 
     <!-- ✅ Review Modal -->
     <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
       <div class="modal-dialog">
-        <form id="reviewForm" class="modal-content">
+        <form id="reviewForm" class="modal-content shadow">
           <div class="modal-header">
             <h5 class="modal-title" id="reviewModalLabel">Submit Your Review</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -375,8 +365,7 @@
               </select>
             </div>
 
-           <input type="hidden" name="rev_date" id="rev_date">
-
+            <input type="hidden" name="rev_date" id="rev_date">
 
             <div id="thankYouMsg" class="alert alert-success d-none mt-2">
               ✅ Thank you for your review!
@@ -384,32 +373,19 @@
           </div>
 
           <div class="modal-footer">
-            <button type="submit" class="btn btn-success">Submit Review</button>
+            <button type="submit" class="btn btn-success w-100">Submit Review</button>
           </div>
         </form>
       </div>
     </div>
 
-    <!-- ✅ Location Info -->
-    <div class="text-center">
-      <h5>Our Location</h5>
-      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3783.155774754125!2d73.85674361489285!3d18.520430287411!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2c1b7b8b7b7b7%3A0x3b7b7b7b7b7b7b7b!2sPune%2C%20Maharashtra%2C%20India!5e0!3m2!1sen!2sin!4v1635781234567!5m2!1sen!2sin"
-        width="100%" height="150" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+    <!-- ✅ Footer Bottom -->
+    <div class="text-center mt-4 border-top pt-3">
+      <p class="mb-0">Developed by <strong>Hotel Finder Team</strong> © 2025</p>
     </div>
-
-    <!-- ✅ Contact Info -->
-    <div class="mt-3">
-      <h5>Contact</h5>
-      <p>Email: <a href="mailto:support@hotelfinder.com">support@hotelfinder.com</a></p>
-      <p>Phone: <a href="tel:+919876543210">+91 98765 43210</a></p>
-    </div>
-  </div>
-
-  <!-- ✅ Footer Bottom -->
-  <div class="text-center mt-3">
-    <p class="mb-0">Developed by Hotel Finder Team © 2025</p>
   </div>
 </footer>
+
 
 
 
@@ -440,46 +416,52 @@
 
     // View Details Handler
     document.querySelectorAll('.view-details').forEach(function(link) {
-      link.addEventListener('click', function(e) {
-        e.preventDefault();
-        const hotelId = this.dataset.hotelId;
-        console.log('Fetching hotel ID:', hotelId);
-        document.getElementById('hotel-details-content').innerHTML = 'Loading...';
-        makeRequest('GET', '/api/hotel/' + hotelId, null, function(error, data) {
-          if (error) {
-            document.getElementById('hotel-details-content').innerHTML = 'Failed to load details.';
-            alert('Error: ' + (error === 'Error 404' ? 'Hotel not found' : error));
-            return;
-          }
-          if (data && data.success) {
-            const hotel = data.hotel;
-            const amenities = data.amenities || [];
-            const amenitiesHtml = amenities.length
-              ? amenities.map(a => '<li>' + (a.amenity_name || 'Unknown') + '</li>').join('')
-              : '<li>No amenities listed</li>';
-            document.getElementById('hotel-details-content').innerHTML = `
-              <h5>${hotel.hotel_name || 'Unknown Hotel'}</h5>
-              ${hotel.hotel_image ? '<img src="/Uploads/hotels/' + hotel.hotel_image + '" class="img-fluid mb-3" alt="Hotel Image" style="max-height:200px; width:100%; object-fit:cover;">' : '<p class="text-muted">No image available</p>'}
-              <p>
-                <strong>City:</strong> ${hotel.city_name || 'N/A'}<br>
-                <strong>Area:</strong> ${hotel.area_name || 'N/A'}<br>
-                <strong>Email:</strong> ${hotel.hotel_email || 'N/A'}<br>
-                <strong>Contact:</strong> ${hotel.hotel_contact || 'N/A'}<br>
-                <strong>Rating:</strong> ${hotel.rating || 0} ⭐<br>
-                <strong>Reviews:</strong> ${hotel.reviewcount || 0}
-              </p>
-              <h6>Amenities:</h6>
-              <ul class="amenities-list">${amenitiesHtml}</ul>
-            `;
-            var modal = new bootstrap.Modal(document.getElementById('viewDetailsModal'));
-            modal.show();
-          } else {
-            document.getElementById('hotel-details-content').innerHTML = 'Failed to load details.';
-            alert(data.message || 'Invalid hotel data');
-          }
-        });
-      });
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    const hotelId = this.dataset.hotelId;
+
+    document.getElementById('hotel-details-content').innerHTML = 'Loading...';
+
+    makeRequest('GET', '/api/hotel/' + hotelId, null, function(error, data) {
+      if (error) {
+        document.getElementById('hotel-details-content').innerHTML = 'Failed to load details.';
+        alert('Error: ' + (error === 'Error 404' ? 'Hotel not found' : error));
+        return;
+      }
+
+      if (data && data.success) {
+        const hotel = data.hotel;
+        const amenities = data.amenities || [];
+
+        const amenitiesHtml = amenities.length
+          ? amenities.map(a => '<li>' + a + '</li>').join('')
+          : '<li>No amenities listed</li>';
+
+        document.getElementById('hotel-details-content').innerHTML = `
+          <h5>${hotel.hotel_name || 'Unknown Hotel'}</h5>
+          ${hotel.hotel_image ? '<img src="/Uploads/hotels/' + hotel.hotel_image + '" class="img-fluid mb-3" alt="Hotel Image" style="max-height:200px; width:100%; object-fit:cover;">' : '<p class="text-muted">No image available</p>'}
+          <p>
+            <strong>City:</strong> ${hotel.city_name || 'N/A'}<br>
+            <strong>Area:</strong> ${hotel.area_name || 'N/A'}<br>
+            <strong>Email:</strong> ${hotel.hotel_email || 'N/A'}<br>
+            <strong>Contact:</strong> ${hotel.hotel_contact || 'N/A'}<br>
+            <strong>Rating:</strong> ${hotel.rating || 0} ⭐<br>
+            <strong>Reviews:</strong> ${hotel.reviewcount || 0}
+          </p>
+          <h6>Amenities:</h6>
+          <ul class="amenities-list">${amenitiesHtml}</ul>
+        `;
+
+        var modal = new bootstrap.Modal(document.getElementById('viewDetailsModal'));
+        modal.show();
+      } else {
+        document.getElementById('hotel-details-content').innerHTML = 'Failed to load details.';
+        alert(data.message || 'Invalid hotel data');
+      }
     });
+  });
+});
+
 
     // Book Now Handler with Username Validation
     document.querySelectorAll('.book-now').forEach(function(link) {

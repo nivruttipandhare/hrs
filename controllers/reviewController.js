@@ -45,3 +45,14 @@ exports.getAllReviews = (req, res) => {
     res.render('admin/allReviews', { reviews: results });
   });
 };
+
+//
+exports.renderFooter = (req, res) => {
+  db.query(`SELECT rev_text, rating, rev_date FROM reviewmaster ORDER BY rev_date DESC LIMIT 1`, (err, result) => {
+    if (err) {
+      return res.render('footer', { latestReview: null });
+    }
+    const latestReview = result.length > 0 ? result[0] : null;
+    res.render('footer', { latestReview });
+  });
+};
