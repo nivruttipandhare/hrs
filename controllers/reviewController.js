@@ -1,7 +1,7 @@
 // controllers/reviewController.js
 const db = require('../config/db');
 
-// ✅ POST: Submit Review
+// ✅ Submit review
 exports.submitReview = (req, res) => {
   const { rev_text, rating, rev_date } = req.body;
 
@@ -11,27 +11,12 @@ exports.submitReview = (req, res) => {
       console.error("❌ Insert Error:", err);
       return res.status(500).json({ success: false });
     }
-    console.log("✅ Review inserted successfully");
+    console.log("✅ Review inserted");
     res.json({ success: true });
   });
 };
 
-exports.getAllReviews = (req, res) => {
-  const sql = `SELECT * FROM reviewmaster ORDER BY rev_date DESC`;
-
-  db.query(sql, (err, results) => {
-    if (err) {
-      console.error("❌ Fetch Error:", err);
-      return res.status(500).send("Database error");
-    }
-
-    console.log("✅ Reviews fetched:", results); // ✅ This must show array
-    res.render('admin/allReviews', { reviews: results });
-  });
-};
-
-
-
+// ✅ Get all reviews and render admin view
 exports.getAllReviews = (req, res) => {
   const sql = "SELECT * FROM reviewmaster ORDER BY rev_date DESC";
 
@@ -41,18 +26,22 @@ exports.getAllReviews = (req, res) => {
       return res.status(500).send("Database error");
     }
 
-    console.log("✅ Reviews fetched:", results);  // Optional log
-    res.render('admin/allReviews', { reviews: results });
+    console.log("✅ Reviews fetched:", results);
+   res.render('admin/reviewMaster', { reviews: results });
   });
 };
 
-//
-exports.renderFooter = (req, res) => {
-  db.query(`SELECT rev_text, rating, rev_date FROM reviewmaster ORDER BY rev_date DESC LIMIT 1`, (err, result) => {
+// ✅ Delete review
+exports.deleteReview = (req, res) => {
+  const { rev_id } = req.params;
+
+  db.query('DELETE FROM reviewmaster WHERE rev_id = ?', [rev_id], (err) => {
     if (err) {
-      return res.render('footer', { latestReview: null });
+      console.error("❌ Delete Error:", err);
+      return res.status(500).send("Delete failed");
     }
-    const latestReview = result.length > 0 ? result[0] : null;
-    res.render('footer', { latestReview });
+    console.log("✅ Review deleted:", rev_id);
+    res.redirect('/admin/reviewMaster');  // ✅ Fix: added leading slash
   });
 };
+

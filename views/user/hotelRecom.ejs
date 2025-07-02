@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hotel Recommendations</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #f4f6f8;
+    }
+
+    .hotel-card {
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+
+    .hotel-card:hover {
+      transform: scale(1.02);
+    }
+
+    .card-img-top {
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .btn-custom {
+      border-radius: 30px;
+      padding: 6px 16px;
+      font-weight: bold;
+    }
+
+    .star {
+      color: gold;
+      font-size: 1.2rem;
+    }
+    /* Styles for modal content, similar to your second template */
+    .modal-sm {
+        max-width: 400px;
+    }
+    .amenities-list {
+        list-style-type: none;
+        padding-left: 0;
+    }
+    .amenities-list li::before {
+        content: '✓ ';
+        color: #28a745;
+    }
+    .modal-card {
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 15px;
+        background-color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-5">
+    <h2 class="text-center text-primary mb-5">🌟 Recommended Hotels for You</h2>
+
+    <% if (recommendations && recommendations.length > 0) { %>
+      <div class="row">
+        <% recommendations.forEach(hotel => { %>
+          <div class="col-md-4 mb-4">
+            <div class="card hotel-card">
+              <img src="/Uploads/hotels/<%= hotel.hotel_image %>" class="card-img-top" alt="Hotel Image">
+              <div class="card-body">
+                <h5 class="card-title text-dark"><%= hotel.hotel_name %></h5>
+                <p class="mb-1"><strong>City:</strong> <%= hotel.city_name %></p>
+                <p class="mb-1"><strong>Area:</strong> <%= hotel.area_name %></p>
+                <p class="mb-1"><strong>Amenities:</strong> <%= hotel.amenities %></p>
+                <p class="mb-1"><strong>Rating:</strong> <%= hotel.rating %> <span class="star">★</span></p>
+                <p class="mb-3"><strong>Reviews:</strong> <%= hotel.reviewcount %></p>
+
+                <div class="d-flex justify-content-between">
+                  <a href="#" class="btn btn-primary view-details" data-hotel-id="<%= hotel.hotel_id %>">View Details</a>
+                  <a href="#" class="btn btn-success book-now" data-hotel-id="<%= hotel.hotel_id %>" data-hotel-name="<%= hotel.hotel_name %>">Book Now</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p class="text-danger text-center">No recommendations available.</p>
+    <% } %>
+  </div>
+
+  <div class="modal fade" id="viewDetailsModal" tabindex="-1" aria-labelledby="viewDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="viewDetailsModalLabel">Hotel Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="hotel-details-content" class="modal-card">
+            Loading...
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="bookingModalLabel">Book Hotel</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="bookingForm">
+            <input type="hidden" name="hotel_id" id="booking_hotel_id">
+            <input type="hidden" name="hotel_name" id="booking_hotel_name">
+            <input type="hidden" name="username" id="booking_username">
+            <div class="mb-3">
+              <label for="booking_date" class="form-label">Booking Date</label>
+              <input type="date" class="form-control" id="booking_date" name="booking_date" value="<%= new Date().toISOString().split('T')[0] %>" required readonly>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="checkin_date" class="form-label">Check-in Date</label>
+                <input
+                  type="date"
+                  class="form-control"
+                  id="checkin_date"
+                  name="checkin_date"
+                  value="<%= new Date().toISOString().split('T')[0] %>"
+                  min="<%= new Date().toISOString().split('T')[0] %>"
+                  required
+                >
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="checkin_time" class="form-label">Check-in Time</label>
+                <input type="time" class="form-control" id="checkin_time" name="checkin_time" required>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="checkout_date" class="form-label">Check-out Date</label>
+                <input type="date" class="form-control" id="checkout_date" name="checkout_date" min="<%= new Date().toISOString().split('T')[0] %>" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="checkout_time" class="form-label">Check-out Time</label>
+                <input type="time" class="form-control" id="checkout_time" name="checkout_time" required>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary" id="confirmBookingBtn">Confirm Booking</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // XHR Request Helper (from your second template)
+    function makeRequest(method, url, data, callback) {
+      var xhr = new XMLHttpRequest();
+      xhr.open(method, url);
+      xhr.onload = function() {
+        var responseData = null;
+        if (xhr.status === 200 && xhr.getResponseHeader('Content-Type') && xhr.getResponseHeader('Content-Type').includes('application/json')) {
+          responseData = JSON.parse(xhr.responseText || '{}');
+        }
+        callback(xhr.status === 200 ? null : 'Error ' + xhr.status, responseData);
+      };
+      xhr.onerror = function() {
+        callback('Network error', null);
+      };
+      if (data) {
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify(data));
+      } else {
+        xhr.send();
+      }
+    }
+
+    // View Details Handler (from your second template)
+    document.querySelectorAll('.view-details').forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const hotelId = this.dataset.hotelId;
+
+        document.getElementById('hotel-details-content').innerHTML = 'Loading...';
+
+        makeRequest('GET', '/api/hotel/' + hotelId, null, function(error, data) {
+          if (error) {
+            document.getElementById('hotel-details-content').innerHTML = 'Failed to load details.';
+            alert('Error: ' + (error === 'Error 404' ? 'Hotel not found' : error));
+            return;
+          }
+
+          if (data && data.success) {
+            const hotel = data.hotel;
+            const amenities = data.amenities || [];
+
+            const amenitiesHtml = amenities.length
+              ? amenities.map(a => '<li>' + a + '</li>').join('')
+              : '<li>No amenities listed</li>';
+
+            document.getElementById('hotel-details-content').innerHTML = `
+              <h5>${hotel.hotel_name || 'Unknown Hotel'}</h5>
+              ${hotel.hotel_image ? '<img src="/Uploads/hotels/' + hotel.hotel_image + '" class="img-fluid mb-3" alt="Hotel Image" style="max-height:200px; width:100%; object-fit:cover;">' : '<p class="text-muted">No image available</p>'}
+              <p>
+                <strong>City:</strong> ${hotel.city_name || 'N/A'}<br>
+                <strong>Area:</strong> ${hotel.area_name || 'N/A'}<br>
+                <strong>Email:</strong> ${hotel.hotel_email || 'N/A'}<br>
+                <strong>Contact:</strong> ${hotel.hotel_contact || 'N/A'}<br>
+                <strong>Rating:</strong> ${hotel.rating || 0} ⭐<br>
+                <strong>Reviews:</strong> ${hotel.reviewcount || 0}
+              </p>
+              <h6>Amenities:</h6>
+              <ul class="amenities-list">${amenitiesHtml}</ul>
+            `;
+
+            var modal = new bootstrap.Modal(document.getElementById('viewDetailsModal'));
+            modal.show();
+          } else {
+            document.getElementById('hotel-details-content').innerHTML = 'Failed to load details.';
+            alert(data.message || 'Invalid hotel data');
+          }
+        });
+      });
+    });
+
+
+    // Book Now Handler with Username Validation (from your second template)
+    document.querySelectorAll('.book-now').forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const hotelId = this.dataset.hotelId;
+        const hotelName = this.dataset.hotelName;
+
+        // Prompt for username
+        const username = prompt('Please enter your username to proceed with booking:');
+        if (!username) {
+          alert('Username is required to book a hotel.');
+          return;
+        }
+
+        // Validate username via AJAX
+        makeRequest('POST', '/api/validate-username', { username: username }, function(error, data) {
+          if (error) {
+            alert('Error validating username: ' + error);
+            return;
+          }
+          if (data && data.success) {
+            document.getElementById('booking_hotel_id').value = hotelId;
+            document.getElementById('booking_hotel_name').value = hotelName;
+            document.getElementById('booking_username').value = username; // Store validated username
+            var modal = new bootstrap.Modal(document.getElementById('bookingModal'));
+            modal.show();
+          } else {
+            alert(data.message || 'Invalid username. Please try again.');
+          }
+        });
+      });
+    });
+
+    // Booking Form Submission (from your second template)
+    document.getElementById('bookingForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var form = e.target;
+      var btn = document.getElementById('confirmBookingBtn');
+      btn.disabled = true;
+
+      var checkinDate = new Date(form.checkin_date.value);
+      var checkoutDate = new Date(form.checkout_date.value);
+      var today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      if (checkinDate < today) {
+        alert('Check-in date cannot be in the past.');
+        btn.disabled = false;
+        return;
+      }
+      if (checkoutDate <= checkinDate) {
+        alert('Check-out date must be after check-in date.');
+        btn.disabled = false;
+        return;
+      }
+
+      var formData = new FormData(form);
+      var jsonData = {};
+      formData.forEach(function(value, key) { jsonData[key] = value; });
+
+      makeRequest('POST', '/api/book', jsonData, function(error, data) {
+        btn.disabled = false;
+        if (error) {
+          alert(data && data.message || 'Booking failed: ' + error);
+          return;
+        }
+        if (data && data.success) {
+          alert(data.message || 'Booking confirmed!');
+          var modal = bootstrap.Modal.getInstance(document.getElementById('bookingModal'));
+          modal.hide();
+          form.reset();
+          form.booking_date.value = new Date().toISOString().split('T')[0];
+          window.location.reload(); // Reload to reflect any changes if needed
+        } else {
+          alert(data.message || 'Booking failed');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

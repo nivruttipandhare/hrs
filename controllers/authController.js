@@ -78,10 +78,15 @@ exports.login = (req, res) => {
         type: user.type
       };
 
-      if (user.type === 'admin') {
-        return res.redirect('/admin/dashboard');
+      // ✅ Handle redirect after login (e.g., to recommendations)
+      if (req.session.redirectTo) {
+        const redirectTo = req.session.redirectTo;
+        delete req.session.redirectTo;
+        return res.redirect(redirectTo);
       } else {
-        return res.redirect('/user/dashboard');
+        return user.type === 'admin'
+          ? res.redirect('/admin/dashboard')
+          : res.redirect('/user/dashboard');
       }
     });
   });
@@ -101,12 +106,13 @@ exports.logout = (req, res) => {
 };
 
 // ================================
-// ✅ Middleware (for route protection)
+// ✅ Middleware for Route Protection
 // ================================
 exports.isAuthenticated = (req, res, next) => {
   if (req.session && req.session.user) {
     return next();
   }
+  req.session.redirectTo = req.originalUrl;
   res.redirect('/login');
 };
 
@@ -116,3 +122,4 @@ exports.isAdmin = (req, res, next) => {
   }
   res.status(403).send('Access denied');
 };
+

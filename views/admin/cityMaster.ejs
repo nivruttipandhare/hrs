@@ -9,7 +9,7 @@
    <!-- ✅ Correct Include -->
 <%- include('../adminDashboard', { user: user }) %>
 
-    <small><%= user.username %></small>
+    
 
 
   <div class="container mt-5">
@@ -19,10 +19,11 @@
     <form action="/admin/add-city" method="POST" class="mb-4">
       <div class="row">
         <div class="col-md-4">
-          <input type="text" name="city_name" class="form-control" placeholder="Enter City Name" required>
+          <input type="text" name="city_name" pattern="^[A-Za-z ]+$" class="form-control" placeholder="Enter City Name" required>
         </div>
         <div class="col-md-4">
-          <input type="text" name="pincode" class="form-control" placeholder="Enter Pincode" required pattern="\d{6}">
+          <input type="text" name="pincode" class="form-control" pattern="^[1-9][0-9]{5}$"
+ placeholder="Enter Pincode" required pattern="\d{6}">
         </div>
         <div class="col-md-4">
           <button type="submit" class="btn btn-primary w-100">Add City</button>

@@ -3,29 +3,16 @@ const express = require('express');
 const router = express.Router();
 const reviewController = require('../controllers/reviewController');
 
-// ✅ Submit a review (POST)
+// ✅ Submit review
 router.post('/submit-review', reviewController.submitReview);
 
-// ✅ Get all reviews (GET)
-router.get('/reviews', reviewController.getAllReviews);
+// ✅ Admin route to view all reviews
+router.get('/admin/reviewMaster', reviewController.getAllReviews);
 
+// ✅ Route for deleting a review
+router.post('/admin/reviews/delete/:rev_id', reviewController.deleteReview);
 
-
-
-
-// GET All Reviews
-router.get('/admin/allReviews', reviewController.getAllReviews);
-
+// // ✅ General user reviews (optional)
+ router.get('/reviewMaster', reviewController.getAllReviews);
 
 module.exports = router;
-router.post('/admin/reviews/delete/:rev_id', (req, res) => {
-  const { rev_id } = req.params;
-
-  db.query('DELETE FROM reviewmaster WHERE rev_id = ?', [rev_id], (err) => {
-    if (err) {
-      console.error("❌ Delete Error:", err);
-      return res.status(500).send("Delete failed");
-    }
-    res.redirect('/admin/allReviews');
-  });
-});

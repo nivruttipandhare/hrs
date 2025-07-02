@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Hotel</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <style>
+    #amenitiesSelect { height: 150px; }
+    .current-image { max-width: 150px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <%- include('../adminDashboard', { user: user }) %>
+  <div class="container mt-4">
+    <h3 class="text-center mb-4">Edit Hotel</h3>
+
+    <form action="/admin/hotelMaster/update/<%= hotel.hotel_id %>" method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="existing_image" value="<%= hotel.hotel_image %>" />
+      <div class="row g-3">
+        <div class="col-md-6">
+          <input type="text" name="hotel_name" class="form-control" value="<%= hotel.hotel_name %>" required />
+        </div>
+        <div class="col-md-6">
+          <input type="email" name="hotel_email" class="form-control" value="<%= hotel.hotel_email %>" required />
+        </div>
+        <div class="col-md-4">
+          <input type="text" name="hotel_contact" class="form-control" value="<%= hotel.hotel_contact %>" required />
+        </div>
+        <div class="col-md-2">
+          <input type="number" step="0.1" name="rating" class="form-control" value="<%= hotel.rating %>" required />
+        </div>
+        <div class="col-md-2">
+          <input type="number" name="reviewcount" class="form-control" value="<%= hotel.reviewcount %>" required />
+        </div>
+        <div class="col-md-4">
+          <input type="file" name="hotel_image" class="form-control" />
+          <% if (hotel.hotel_image) { %>
+            <img src="/Uploads/hotels/<%= hotel.hotel_image %>" class="current-image" alt="Hotel Image" />
+          <% } %>
+        </div>
+
+        <div class="col-md-4">
+          <select name="city_id" class="form-control" required>
+            <% cities.forEach(city => { %>
+              <option value="<%= city.city_id %>" <%= city.city_id === hotel.city_id ? 'selected' : '' %>><%= city.city_name %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <select name="area_id" class="form-control" required>
+            <% areas.forEach(area => { %>
+              <option value="<%= area.area_id %>" <%= area.area_id === hotel.area_id ? 'selected' : '' %>><%= area.area_name %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <div class="col-md-8">
+          <label class="form-label">Select Amenities</label>
+          <select name="amenities[]" id="amenitiesSelect" class="form-select" multiple required>
+            <% allAmenities.forEach(a => { %>
+              <option value="<%= a.amenity_id %>" <%= selectedAmenityIds.has(a.amenity_id) ? 'selected' : '' %>><%= a.amenity_name %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <div class="col-12">
+          <button class="btn btn-primary">Update Hotel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

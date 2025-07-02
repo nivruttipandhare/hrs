@@ -31,3 +31,16 @@ exports.searchHotels = (req, res) => {
     res.json(results);
   });
 };
+
+
+// controllers/hotelController.js
+
+
+function getAllHotels() {
+  return db.promise().query('SELECT * FROM hotelmaster')
+    .then(([rows]) => rows);
+}
+
+module.exports = {
+  getAllHotels
+};
