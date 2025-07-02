@@ -1,40 +1,37 @@
+const express = require('express');
+const router = express.Router();
+const { recommendHotelsByUser } = require('../services/hotelRecomServices');
 const db = require('../config/db');
-const bcrypt = require('bcrypt');
+const isLoggedIn = require('../middlewares/authMiddleware');
 
-//  LOGIN CONTROLLER
-exports.login = async (req, res) => {
-  const { useremail, password } = req.body;
+// Function to get all hotels (uses Promises)
+function getHotels() {
+  return db.promise().query('SELECT * FROM hotelmaster')
+    .then(([rows]) => rows);
+}
 
-  const sql = 'SELECT * FROM usermaster WHERE useremail = ?';
+// Route without async/await
+router.get('/user/dashboard', isLoggedIn, (req, res) => {
+  const user = req.session.user;
+  if (!user) return res.redirect('/login');
 
-  db.query(sql, [useremail], async (err, results) => {
-    if (err) {
-      console.error("Login DB Error:", err);
-      return res.status(500).render('login', { message: 'Database error' });
-    }
+  getHotels()
+    .then(hotels => {
+      return recommendHotelsByUser(user.userid)
+        .then(recommendations => {
+          res.render('userDashboard', {
+            user,
+            hotels,
+            recommendations,
+            bookings: [],
+            error: null
+          });
+        });
+    })
+    .catch(err => {
+      console.error("❌ Error in /user/dashboard:", err);
+      res.status(500).send("Internal Server Error");
+    });
+});
 
-    if (results.length === 0) {
-      return res.status(401).render('login', { message: 'User not found' });
-    }
-
-    const user = results[0];
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).render('login', { message: 'Incorrect password' });
-    }
-
-    // ✅ Save user in session
-    req.session.user = {
-      userid: user.userid,
-      username: user.username,
-      type: user.type
-    };
-
-    // ✅ Redirect based on user type
-    if (user.type === 'admin') {
-      return res.redirect('/admin/ashboard');
-    } else {
-      return res.redirect('/user/ashboard');
-    }
-  });
-};
+module.exports = router;

@@ -1,10 +1,16 @@
 const express = require('express');
 const router = express.Router();
+
+// ✅ Import controller (make sure the path is correct)
 const hotelRoomJoinController = require('../controllers/hotelRoomJoinController');
 
-router.get('/admin/hotelRooms', hotelRoomJoinController.getAll);
-router.post('/admin/hotelRooms/add', hotelRoomJoinController.add);
-router.post('/admin/hotelRooms/update/:hotel_id/:room_id', hotelRoomJoinController.update);
-router.post('/admin/hotelRooms/delete/:hotel_id/:room_id', hotelRoomJoinController.delete);
+// ✅ Import middleware if needed
+const { isLoggedIn } = require('../middlewares/authMiddleware');
+
+// ✅ Define routes using functions
+router.get('/admin/hotelRooms', isLoggedIn, hotelRoomJoinController.getAll);
+router.post('/admin/hotelRooms/add', isLoggedIn, hotelRoomJoinController.add);
+router.post('/admin/hotelRooms/update/:hotel_id/:room_id', isLoggedIn, hotelRoomJoinController.update);
+router.post('/admin/hotelRooms/delete/:hotel_id/:room_id', isLoggedIn, hotelRoomJoinController.delete);
 
 module.exports = router;

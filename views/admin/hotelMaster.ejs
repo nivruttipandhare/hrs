@@ -4,22 +4,22 @@
   <meta charset="UTF-8" />
   <title>Hotel Master</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <style>
-    .card-img-top {
-      height: 200px;
-      object-fit: cover;
-    }
+    .card-img-top { height: 200px; object-fit: cover; }
+    #amenitiesSelect { height: 150px; }
   </style>
 </head>
 <body>
-  <!-- Include Admin Dashboard -->
   <%- include('../adminDashboard', { user: user }) %>
 
   <div class="container mt-4">
     <h3 class="text-center mb-4">Hotel Master</h3>
 
-    <!-- Add Hotel Form -->
-<form action="/admin/hotelMaster/add" method="POST" enctype="multipart/form-data">
+   
+
+    <!-- ADD HOTEL FORM -->
+    <form id="addHotelForm" action="/admin/hotelMaster/add" method="POST" enctype="multipart/form-data">
       <div class="row g-3">
         <div class="col-md-4">
           <input type="text" name="hotel_name" class="form-control" placeholder="Hotel Name" required />
@@ -55,67 +55,73 @@
         <div class="col-md-4">
           <input type="file" name="hotel_image" class="form-control" accept="image/*" required />
         </div>
+        <div class="col-md-8">
+  <label for="amenitiesSelect" class="form-label">Select Amenities</label>
+  <select class="form-select" id="amenitiesSelect" name="amenities[]" multiple required>
+    <option disabled selected>Select Amenities</option>
+    <% amenities.forEach(amenity => { %>
+      <option value="<%= amenity.amenity_id %>"><%= amenity.amenity_name %></option>
+    <% }) %>
+  </select>
+</div>
+
         <div class="col-md-2">
           <button type="submit" class="btn btn-success w-100">Add Hotel</button>
         </div>
       </div>
     </form>
 
-    <!-- Search Form -->
-    <form method="GET" action="/admin/hotelMaster" class="row mb-4">
-      <div class="col-md-10">
-        <input type="text" name="search" class="form-control" placeholder="Search by hotel name" value="<%= search || '' %>" />
-      </div>
-      <div class="col-md-2">
-        <button class="btn btn-primary w-100">Search</button>
+    <br>
+    <div class="text-center p-2 bg-success "><h1>Added Hotel</h1></div>
+    <br>
+    
+     <!-- Search Bar --> 
+    <form class="mb-3" method="GET" action="/admin/hotelMaster">
+      <div class="input-group">
+        <input type="text" name="search" class="form-control" placeholder="Search by hotel name..." value="<%= search || '' %>">
+        <button class="btn btn-outline-secondary" type="submit">Search</button>
       </div>
     </form>
-
-    <!-- Hotel Cards Grid -->
-    <div class="row">
-      <% if (hotels.length) { %>
+    <!-- HOTEL LISTING -->
+    <div class="row mt-4">
+      <% if (hotels && hotels.length) { %>
         <% hotels.forEach(hotel => { %>
           <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm">
+            <div class="card h-100">
               <% if (hotel.hotel_image) { %>
-<img src="/uploads/hotels/<%= hotel.hotel_image %>" width="300" height="200" alt="Hotel Image" />
-              <% } else { %>
-                <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 200px;">
-                  <span class="text-muted">No Image</span>
-                </div>
+                <img src="/Uploads/hotels/<%= hotel.hotel_image %>" class="card-img-top" alt="<%= hotel.hotel_name %>" />
               <% } %>
               <div class="card-body">
-                <h5 class="card-title"><%= hotel.hotel_name %></h5>
-                <p class="card-text">
-                  <strong>City:</strong> <%= hotel.city_name %><br>
-                  <strong>Area:</strong> <%= hotel.area_name %><br>
-                  <strong>Email:</strong> <%= hotel.hotel_email %><br>
-                  <strong>Contact:</strong> <%= hotel.hotel_contact %><br>
-                  <strong>Rating:</strong> <%= hotel.rating %> ⭐<br>
-                  <strong>Reviews:</strong> <%= hotel.reviewcount %>
+                <h5><%= hotel.hotel_name %></h5>
+                <p>
+                  <strong>City:</strong> <%= hotel.city_name %><br/>
+                  <strong>Area:</strong> <%= hotel.area_name %><br/>
+                  <strong>Email:</strong> <%= hotel.hotel_email %><br/>
+                  <strong>Contact:</strong> <%= hotel.hotel_contact %><br/>
+                  <strong>Rating:</strong> <%= hotel.rating %><br/>
+                  <strong>Reviews:</strong> <%= hotel.reviewcount %><br/>
+                  <strong>Amenities:</strong> <%= hotel.amenity_names || 'N/A' %>
                 </p>
                 <a href="/admin/hotelMaster/edit/<%= hotel.hotel_id %>" class="btn btn-sm btn-warning me-2">Edit</a>
-                <form method="POST" action="/admin/hotelMaster/delete/<%= hotel.hotel_id %>" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this hotel?')">
-                  <button class="btn btn-sm btn-danger">Delete</button>
-                </form>
+                <a href="/admin/hotelMaster/delete/<%= hotel.hotel_id %>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this hotel?')">Delete</a>
               </div>
             </div>
           </div>
         <% }) %>
       <% } else { %>
         <div class="col-12 text-center text-muted">
-          <p>No hotels found</p>
+          <p>No hotels found.</p>
         </div>
       <% } %>
     </div>
 
     <!-- Pagination -->
-    <% if (totalPages > 1) { %>
+    <% if (totalPages && totalPages > 1) { %>
       <nav class="mt-4">
         <ul class="pagination justify-content-center">
           <% for (let i = 1; i <= totalPages; i++) { %>
-            <li class="page-item <%= currentPage === i ? 'active' : '' %>">
-              <a class="page-link" href="?page=<%= i %>&search=<%= search %>"><%= i %></a>
+            <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+              <a class="page-link" href="/admin/hotelMaster?page=<%= i %>&search=<%= search %>"><%= i %></a>
             </li>
           <% } %>
         </ul>

@@ -47,5 +47,5 @@ router.post('/delete-amenity/:id', adminController.deleteAmenity);
 router.get('/dashboard', adminController.showDashboard);
 
 
-
 module.exports = router;
+

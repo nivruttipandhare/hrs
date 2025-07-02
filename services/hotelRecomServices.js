@@ -4,10 +4,10 @@ const conn = require("../config/db");
 
 function createDocument(hotel) {
   return [
-    hotel.city_name,
-    hotel.area_name,
-    hotel.amenities,
-    hotel.room_types,
+    hotel.city_name || "",
+    hotel.area_name || "",
+    hotel.amenities || "",
+    hotel.room_types || "",
     hotel.type || "standard"
   ].join(" ").toLowerCase();
 }
@@ -26,7 +26,7 @@ function getVector(tfidf, index, vocabulary) {
 async function recommendHotelsByUser(userId, topN = 5) {
   return new Promise((resolve, reject) => {
     const query = `
-     SELECT
+      SELECT
   h.hotel_id,
   h.hotel_name,
   h.hotel_image,
@@ -45,16 +45,24 @@ LEFT JOIN hotelamenitiesjoin ha ON h.hotel_id = ha.hotel_id
 LEFT JOIN amenities am ON ha.amenity_id = am.amenity_id
 LEFT JOIN hotelroomjoin hr ON h.hotel_id = hr.hotel_id
 LEFT JOIN roomsmaster rm ON hr.room_id = rm.room_id
-LEFT JOIN bookingmaster b ON b.hotel_id = h.hotel_id AND b.userid = ?
+LEFT JOIN bookingmaster b ON b.hotel_id = h.hotel_id AND b.userid = 45
 GROUP BY h.hotel_id;
+;
     `;
 
     conn.query(query, [userId], (err, hotels) => {
-      if (err) return reject(err);
+      if (err) {
+        console.error("❌ DB Error:", err);
+        return reject(err);
+      }
 
       const booked = hotels.filter(h => h.is_booked_by_user === 1);
       const unbooked = hotels.filter(h => h.is_booked_by_user === 0);
-      if (booked.length === 0) return resolve([]);
+
+      if (booked.length === 0) {
+        const fallback = unbooked.sort((a, b) => b.rating - a.rating).slice(0, topN);
+        return resolve(fallback);
+      }
 
       const allHotels = booked.concat(unbooked);
       const tfidf = buildTfIdf(allHotels);
@@ -63,14 +71,14 @@ GROUP BY h.hotel_id;
         allHotels.flatMap((_, i) => tfidf.listTerms(i).map(t => t.term))
       )];
 
-      const bookedVectors = booked.map((_, i) => getVector(tfidf, i, vocabulary));
+      const bookedIndices = booked.map(b => allHotels.findIndex(h => h.hotel_id === b.hotel_id));
+      const bookedVectors = bookedIndices.map(i => getVector(tfidf, i, vocabulary));
 
       const recommendations = unbooked.map((hotel, idx) => {
-        const i = booked.length + idx;
+        const i = allHotels.findIndex(h => h.hotel_id === hotel.hotel_id);
         const vector = getVector(tfidf, i, vocabulary);
-
-        const avgSimilarity =
-          bookedVectors.reduce((sum, bv) => sum + cosineSimilarity(bv, vector), 0) / bookedVectors.length;
+        const avgSimilarity = bookedVectors.reduce((sum, bv) =>
+          sum + cosineSimilarity(bv, vector), 0) / bookedVectors.length;
 
         return { hotel, score: avgSimilarity };
       });

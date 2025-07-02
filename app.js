@@ -1,5 +1,6 @@
 // ===== 📁 app.js =====
 const express = require('express');
+
 const session = require('express-session');
 const path = require('path');
 const fs = require('fs');
@@ -13,9 +14,14 @@ app.use(express.json());
 app.use(methodOverride('_method'));
 
 app.use(session({
-  secret: 'YourSecretKey123',
+  secret: 'YourSecretKey123',   // Change to a secure, long string in production
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: false,     // Better security: no session unless modified
+  cookie: {
+    httpOnly: true,             // Prevents JavaScript access (safe)
+    maxAge: 24 * 30*60 * 1000 // 1 day
+    // secure: true             // Uncomment if you're using HTTPS
+  }
 }));
 
 app.use((req, res, next) => {
@@ -47,13 +53,14 @@ const userDashboardRoutes = require('./routes/userDashboardRoutes');
 const roomsMasterRoutes = require('./routes/roomsMasterRoutes');
 const hotelRoomJoinRoutes = require('./routes/hotelRoomJoinRoutes');
 
+const reviewRoutes = require('./routes/reviewRoutes');
+app.use('/', reviewRoutes); // ✅ mount routes
 
-const reviewRoutes = require('./routes/reviewRoutes'); // path must be correct
-app.use('/', reviewRoutes); // mounted on "/"
 
 //hotelRecom
 const hotelRecomRoutes = require('./routes/hotelRecomRoutes');
-app.use('/', hotelRecomRoutes);
+app.use('/', hotelRecomRoutes); // This allows /user/hotelRecom to work
+1
 
 app.use('/admin/hotelMaster', hotelMasterRoutes);
 // ✅ Use Routes
@@ -76,6 +83,8 @@ app.use((req, res) => {
   res.status(404).send('Route not found: ' + req.originalUrl);
 });
 
-// ✅ Start Server
-const PORT = 3500;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
+
+app.listen(3500, () => {
+  console.log('Server running on port 3500');
+});
