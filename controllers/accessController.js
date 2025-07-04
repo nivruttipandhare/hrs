@@ -2,7 +2,7 @@ const db = require('../config/db');
 const bcrypt = require('bcrypt');
 
 // List of allowed admin usernames
-const allowedAdminUsernames = ['admin1', 'admin2', 'admin3'];
+const allowedAdminUsernames = ['admin1', 'admin2',];
 
 exports.login = (req, res) => {
   const { username, password } = req.body;
@@ -32,7 +32,7 @@ exports.login = (req, res) => {
 
     // Save to session
     req.session.user = {
-      id: user.id,
+      id: user.userid,
       username: user.username,
       role: role // validated role
     };

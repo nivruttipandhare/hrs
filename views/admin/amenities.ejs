@@ -1,72 +1,111 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Amenities</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-
+  <meta charset="UTF-8">
+  <title>Amenity Master</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    .search-bar   { max-width:380px; }
+    .pagination   { justify-content:center; }
+    .spinner      { display:none; }
+  </style>
 </head>
 <body>
-   <!-- Admin Dashboard Include -->
-    <!-- ✅ Correct Include -->
+
   <%- include('../adminDashboard') %>
 
-
-   
   <div class="container mt-5">
-    <h2 class="mb-4">Amenity Master</h2>
+    <h2 class="mb-4 text-primary">Amenity Master</h2>
 
-    <!-- Add Amenity Form -->
-    <form action="/admin/add-amenity" method="POST" class="mb-4">
-      <div class="row">
-        <div class="col-md-8">
-          <input type="text" name="amenity_name" pattern="^[A-Za-z ]+$" class="form-control" placeholder="Enter Amenity Name" required>
-        </div>
-        <div class="col-md-4">
-          <button type="submit" class="btn btn-primary w-100">Add Amenity</button>
-        </div>
+    <!-- ➕ Add Amenity -->
+    <form action="/admin/add-amenity" method="POST" class="row gy-2 gx-3 align-items-center mb-4">
+      <div class="col-md-8">
+        <input class="form-control" type="text" name="amenity_name"
+               pattern="^[A-Za-z ]+$" placeholder="Enter Amenity Name" required>
+      </div>
+      <div class="col-md-4 d-grid">
+        <button class="btn btn-success"><i class="bi bi-plus-circle"></i> Add Amenity</button>
       </div>
     </form>
 
-    <!-- Search Form -->
-    <form method="GET" action="/admin/amenities" class="mb-4">
-      <div class="row">
-        <div class="col-md-8">
-          <input type="text" name="search" class="form-control" placeholder="Search Amenity" value="<%= search || '' %>">
-        </div>
-        <div class="col-md-4">
-          <button type="submit" class="btn btn-secondary w-100">Search</button>
-        </div>
-      </div>
-    </form>
+    <!-- 🔍 Search -->
+    <div class="d-flex align-items-center gap-3 mb-3">
+      <input id="searchInput" class="form-control search-bar" placeholder="🔍 Search amenities…">
+      <div id="loader" class="spinner-border text-success spinner" role="status"></div>
+    </div>
 
-    <!-- Amenities Table -->
-    <table class="table table-bordered">
-      <thead class="table-light">
-        <tr>
-          <th>ID</th>
-          <th>Amenity Name</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% if (amenities.length === 0) { %>
-          <tr><td colspan="3" class="text-center">No amenities found.</td></tr>
-        <% } else { %>
-          <% amenities.forEach(amenity => { %>
+    <!-- 📋 Table -->
+    <div class="table-responsive">
+      <table class="table table-bordered text-center align-middle" id="amenityTable">
+        <thead class="table-light">
+          <tr><th>ID</th><th>Amenity</th><th>Action</th></tr>
+        </thead>
+        <tbody id="amenityBody">
+          <% amenities.forEach(a => { %>
             <tr>
-              <td><%= amenity.amenity_id %></td>
-              <td><%= amenity.amenity_name %></td>
+              <td><%= a.amenity_id %></td>
+              <td><%= a.amenity_name %></td>
               <td>
-                <form action="/admin/delete-amenity/<%= amenity.amenity_id %>" method="POST" onsubmit="return confirm('Delete this amenity?');">
-                  <button class="btn btn-danger btn-sm">Delete</button>
+                <form action="/admin/delete-amenity/<%= a.amenity_id %>" method="POST"
+                      onsubmit="return confirm('Delete this amenity?');">
+                  <button class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
                 </form>
               </td>
             </tr>
           <% }) %>
-        <% } %>
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 📑 Pagination -->
+    <nav><ul id="pagination" class="pagination"></ul></nav>
   </div>
+
+  <!-- 🔧 Client‑side search & pagination -->
+  <script>
+    const ROWS_PER_PAGE = 5;
+    const tbody     = document.getElementById('amenityBody');
+    const allRows   = Array.from(tbody.querySelectorAll('tr'));
+    const pagination= document.getElementById('pagination');
+    const searchBox = document.getElementById('searchInput');
+    const loader    = document.getElementById('loader');
+    let currentPage = 1;
+
+    function filterRows() {
+      const q = searchBox.value.trim().toLowerCase();
+      return allRows.filter(row => row.cells[1].innerText.toLowerCase().includes(q));
+    }
+
+    function render() {
+      const rows = filterRows();
+      const totalPages = Math.max(1, Math.ceil(rows.length / ROWS_PER_PAGE));
+      currentPage = Math.min(currentPage, totalPages);
+
+      tbody.replaceChildren(...rows.slice((currentPage-1)*ROWS_PER_PAGE, currentPage*ROWS_PER_PAGE));
+
+      pagination.innerHTML = '';
+      for (let i = 1; i <= totalPages; i++) {
+        const li = document.createElement('li');
+        li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+        li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+        li.onclick = (e) => { e.preventDefault(); currentPage = i; render(); };
+        pagination.appendChild(li);
+      }
+      loader.style.display = 'none';           // hide spinner when done
+    }
+
+    /* Debounce helper to reduce flicker */
+    let debounceTimer;
+    searchBox.oninput = () => {
+      loader.style.display = 'inline-block';   // show spinner
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => { currentPage = 1; render(); }, 300);
+    };
+
+    render(); // first paint
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

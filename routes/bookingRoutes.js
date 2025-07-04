@@ -1,23 +1,24 @@
+// routes/bookingRoutes.js
 const express = require('express');
-const router = express.Router();
-const db = require('../config/db');
+const router  = express.Router();
+
 const bookingController = require('../controllers/bookingController');
-router.post('/', bookingController.createBooking);
-// Insert booking data
-router.post('/book', (req, res) => {
-  const { userid, hotel_id, booking_date, checkin_date, checkin_time, checkout_date, checkout_time } = req.body;
 
-  const sql = `INSERT INTO bookingmaster 
-    (userid, hotel_id, booking_date, checkin_date, checkin_time, checkout_date, checkout_time)
-    VALUES (?, ?, ?, ?, ?, ?, ?)`;
+/*  CREATE  →  POST /api/bookings            */
+router.post('/api/bookings', bookingController.createBooking);
 
-  db.query(sql, [userid, hotel_id, booking_date, checkin_date, checkin_time, checkout_date, checkout_time], (err, result) => {
-    if (err) {
-      console.error("Booking Insert Error:", err);
-      return res.status(500).json({ message: "Booking failed" });
-    }
-    res.status(200).json({ message: "Booking successful!" });
-  });
-});
+/*  UPDATE  →  PUT  /api/bookings/:id        */
+// GET /admin/bookings/:id/edit → Render edit form
+router.get('/admin/bookings/:id/edit', bookingController.renderEditBookingForm);
+
+
+// DELETE /admin/bookings/:id
+router.delete('/admin/bookings/:id', bookingController.deleteBooking);
+router.get('/bookings/:id/edit', bookingController.renderEditBookingForm);
+
+router.put('/api/bookings/:id', bookingController.updateBooking);
+router.put('/admin/bookings/:id', bookingController.updateBooking);
+router.put('/api/bookings/:id', bookingController.updateBooking);
+
 
 module.exports = router;

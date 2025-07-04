@@ -2,99 +2,154 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Hotel Room Join</title>
+  <title>Hotel Room Price Management</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <style>
+    @media (max-width: 576px) {
+      table thead { display: none; }
+      table tbody tr { display: block; margin-bottom: 1rem; border: 1px solid #dee2e6; padding: 1rem; }
+      table tbody td { display: flex; justify-content: space-between; padding: 0.5rem 0; border: none; }
+      table tbody td::before { content: attr(data-label); font-weight: bold; }
+    }
+  </style>
 </head>
 <body>
- <%- include('../adminDashboard')%>
-<div class="container my-5">
-  <h2 class="text-center text-primary">Hotel Room Price Management</h2>
 
-  <!-- ✅ ADD FORM -->
+<%- include('../adminDashboard') %>
+
+<div class="container my-4">
+  <h2 class="text-center text-primary mb-4">Hotel Room Price Management</h2>
+
+  <!-- 🔍 Search -->
+  <div class="mb-3 d-flex justify-content-between align-items-center">
+    <div id="loader" class="spinner-border text-success ms-3" style="display:none;"></div>
+  </div>
+
+  <!-- ✅ Add Form -->
   <form action="/admin/hotelRooms/add" method="POST" class="row g-3 mb-4">
     <div class="col-md-3">
       <select name="hotel_id" class="form-select" required>
         <option value="">Select Hotel</option>
         <% hotels.forEach(h => { %>
           <option value="<%= h.hotel_id %>"><%= h.hotel_name %></option>
-        <% }); %>
+        <% }) %>
       </select>
     </div>
-
     <div class="col-md-3">
       <select name="room_id" class="form-select" required>
         <option value="">Select Room</option>
         <% rooms.forEach(r => { %>
           <option value="<%= r.room_id %>"><%= r.room_type %></option>
-        <% }); %>
+        <% }) %>
       </select>
     </div>
-
     <div class="col-md-3">
-      <input type="number" name="price" pattern="^\d+(\.\d{1,2})?$" class="form-control" placeholder="Enter Price" required>
+      <input type="number" name="price" class="form-control" placeholder="Enter Price" required>
     </div>
-
-    <div class="col-md-3">
-      <button type="submit" class="btn btn-success w-100">Add</button>
+    <div class="col-md-3 d-grid">
+      <button type="submit" class="btn btn-success">Add</button>
     </div>
   </form>
 
-  <!-- ✅ TABLE LIST -->
-  <table class="table table-bordered table-striped">
-    <thead class="table-dark">
-      <tr>
-        <th>Hotel Name</th>
-        <th>Room Type</th>
-        <th>Price</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% if (hotelRooms.length === 0) { %>
-        <tr>
-          <td colspan="4" class="text-center text-danger">No records found.</td>
-        </tr>
-      <% } else { %>
+  <!-- 🔎 Search -->
+  <div class="p-2">
+    <input type="text" id="searchInput" class="form-control w-50" placeholder="🔍 Search hotel, room or price..." />
+  </div>
+
+  <!-- ✅ Table -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped text-center">
+      <thead class="table-dark">
+        <tr><th>Hotel</th><th>Room</th><th>Price</th><th>Actions</th></tr>
+      </thead>
+      <tbody id="roomTableBody">
         <% hotelRooms.forEach(room => { %>
           <tr>
-            <td><%= room.hotel_name %></td>
-            <td><%= room.room_type %></td>
-            <td><%= room.price %></td>
-            <td>
-              <!-- EDIT -->
-              <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editModal<%= room.hotel_id %>_<%= room.room_id %>">Edit</button>
-
-              <!-- DELETE -->
+            <td data-label="Hotel"><%= room.hotel_name %></td>
+            <td data-label="Room"><%= room.room_type %></td>
+            <td data-label="Price"><%= room.price %></td>
+            <td data-label="Actions">
+              <!-- ✏️ Edit page button -->
+              <a href="/admin/hotelRooms/edit/<%= room.hotel_id %>/<%= room.room_id %>" class="btn btn-sm btn-primary">
+                <i class="bi bi-pencil"></i>
+                Update
+              </a>
+              <!-- 🗑️ Delete -->
               <form action="/admin/hotelRooms/delete/<%= room.hotel_id %>/<%= room.room_id %>" method="POST" class="d-inline">
-                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this entry?')">Delete</button>
+                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this entry?')">
+                  <i class="bi bi-trash"></i>
+                  Delete
+                </button>
               </form>
             </td>
           </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
 
-          <!-- ✅ EDIT MODAL -->
-          <div class="modal fade" id="editModal<%= room.hotel_id %>_<%= room.room_id %>" tabindex="-1">
-            <div class="modal-dialog">
-              <form action="/admin/hotelRooms/update/<%= room.hotel_id %>/<%= room.room_id %>" method="POST" class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title">Edit Room Price</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                  <input type="number" name="price" class="form-control" value="<%= room.price %>" required>
-                </div>
-                <div class="modal-footer">
-                  <button type="submit" class="btn btn-success">Update</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        <% }); %>
-      <% } %>
-    </tbody>
-  </table>
+  <!-- ✅ Pagination -->
+  <nav><ul class="pagination justify-content-center" id="pagination"></ul></nav>
 </div>
 
-<!-- ✅ Bootstrap JS -->
+<!-- ✅ Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const ROWS_PER_PAGE = 5;
+  const searchInput = document.getElementById("searchInput");
+  const tableBody = document.getElementById("roomTableBody");
+  const allRows = Array.from(tableBody.querySelectorAll("tr"));
+  const pagination = document.getElementById("pagination");
+  const loader = document.getElementById("loader");
+  let currentPage = 1;
+
+  function getFilteredRows() {
+    const query = searchInput.value.trim().toLowerCase();
+    return allRows.filter(row => {
+      return Array.from(row.cells).some(cell =>
+        cell.textContent.toLowerCase().includes(query)
+      );
+    });
+  }
+
+  function renderTable() {
+    const rows = getFilteredRows();
+    const totalPages = Math.ceil(rows.length / ROWS_PER_PAGE);
+    currentPage = Math.min(currentPage, totalPages || 1);
+
+    tableBody.innerHTML = "";
+    rows.slice((currentPage - 1) * ROWS_PER_PAGE, currentPage * ROWS_PER_PAGE)
+        .forEach(row => tableBody.appendChild(row));
+
+    pagination.innerHTML = "";
+    for (let i = 1; i <= totalPages; i++) {
+      const li = document.createElement("li");
+      li.className = `page-item ${i === currentPage ? "active" : ""}`;
+      li.innerHTML = `<a href="#" class="page-link">${i}</a>`;
+      li.onclick = e => {
+        e.preventDefault();
+        currentPage = i;
+        renderTable();
+      };
+      pagination.appendChild(li);
+    }
+
+    loader.style.display = "none";
+  }
+
+  // Search input with debounce
+  let debounceTimer;
+  searchInput.addEventListener("input", () => {
+    loader.style.display = "inline-block";
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      currentPage = 1;
+      renderTable();
+    }, 300);
+  });
+
+  renderTable(); // Initial render
+</script>
 </body>
 </html>

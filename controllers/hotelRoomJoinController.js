@@ -109,3 +109,22 @@ exports.delete = (req, res) => {
     res.redirect('/admin/hotelRooms');
   });
 };
+
+// controllers/hotelRoomJoinController.js
+exports.renderEditPage = (req, res) => {
+  const { hotel_id, room_id } = req.params;
+  const sql = `
+     SELECT hrj.hotel_id, hrj.room_id, hrj.price,
+            h.hotel_name, r.room_type
+     FROM   hotelroomjoin hrj
+     JOIN   hotelmaster h ON h.hotel_id = hrj.hotel_id
+     JOIN   roommaster  r ON r.room_id = hrj.room_id
+     WHERE  hrj.hotel_id = ? AND hrj.room_id = ?
+  `;
+  db.query(sql, [hotel_id, room_id], (err, rows) => {
+    if (err)  return res.status(500).send('DB error');
+    if (!rows.length) return res.status(404).send('Entry not found');
+
+    res.render('admin/editHotelRoom', { current: rows[0], user: req.session.user });
+  });
+};
