@@ -62,6 +62,21 @@ const hotelRecomRoutes = require('./routes/hotelRecomRoutes');
 app.use('/', hotelRecomRoutes); // This allows /user/hotelRecom to work
 1
 
+
+const bookingRoutes = require('./routes/bookingRoutes');
+app.use('/',bookingRoutes);  // ✅ now handles /admin/bookings/:id/edit
+
+
+
+
+
+// app.use("/",hotelRoomJoinRoutes);
+app.use('/admin/hotelRooms', hotelRoomJoinRoutes);
+
+// ✅  MUST be exactly one line like this:
+
+
+
 app.use('/admin/hotelMaster', hotelMasterRoutes);
 // ✅ Use Routes
 app.use("/", roomsMasterRoutes);

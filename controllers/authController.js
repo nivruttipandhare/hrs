@@ -13,6 +13,7 @@ exports.register = (req, res) => {
       return res.render('register', { message: '❌ Registration failed. Try again.' });
     }
 
+
     if (existingUser.length > 0) {
       return res.render('register', { message: '❌ Email already registered' });
     }
@@ -31,8 +32,8 @@ exports.register = (req, res) => {
             console.error("❌ Insert error:", insertErr);
             return res.render('register', { message: '❌ Registration failed. Try again.' });
           }
-
-          return res.render('register', { message: '✅ Registration successful! You can now login.' });
+req.session.successMsg = '✅ Registration successful! Please log in.';
+          return res.redirect('/login');
         }
       );
     });

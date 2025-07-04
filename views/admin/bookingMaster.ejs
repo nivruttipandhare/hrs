@@ -2,80 +2,128 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>All Hotel Bookings</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>Hotel Bookings</title>
+
+  <!-- Bootstrap 5 + Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
   <style>
-    body {
-      background-color: #f8f9fa;
-    }
-    .table-img {
-      width: 100px;
-      height: 60px;
-      object-fit: cover;
-    }
+    body        { background:#f2f9ff; }
+    thead       { background:#198754; color:#fff; }
+    .pagination { justify-content:center; }
+    .search-bar { max-width:400px; }
   </style>
 </head>
 <body>
 
-  <!-- Admin Dashboard Navigation -->
+  <!-- Sidebar / header -->
   <%- include('../adminDashboard') %>
 
-  <div class="container mt-5">
-    <h2 class="text-center text-success mb-4">All Hotel Bookings</h2>
+  <div class="container my-5">
+    <h2 class="text-center mb-4 text-success">All Hotel Bookings</h2>
 
-    <% if (error) { %>
-      <div class="alert alert-danger text-center"><%= error %></div>
-    <% } %>
+    <!-- 🔍 Search bar -->
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+      <input id="searchInput"
+             class="form-control search-bar"
+             placeholder="🔍 Search bookings…"
+             aria-label="Search bookings">
+      <!-- Add‑button area (optional) -->
+    </div>
 
+    <!-- ▸ bookings table -->
     <div class="table-responsive">
-      <table class="table table-bordered table-striped text-center align-middle">
-        <thead class="table-dark">
+      <table class="table table-hover table-bordered align-middle text-center" id="bookingTable">
+        <thead>
           <tr>
-            <th>#</th>
-            <th>Hotel Image</th>
-            <th>Hotel</th>
-            <th>User</th>
-            <th>Booking Date</th>
-            <th>Check-In</th>
-            <th>Check-Out</th>
-            <th>Actions</th>
+            <th>ID</th><th>User</th><th>Hotel</th><th>Booking Date</th>
+            <th>Check‑In</th><th>CI Time</th><th>Check‑Out</th><th>CO Time</th>
+            <th style="width:110px">Actions</th>
           </tr>
         </thead>
-        <tbody>
-          <% if (bookings && bookings.length > 0) { %>
-            <% bookings.forEach((b, index) => { %>
-              <tr>
-                <td><%= index + 1 %></td>
-                <td>
-                  <% if (b.hotel_image) { %>
-                    <img src="/Uploads/hotels/<%= b.hotel_image %>" class="table-img" alt="Hotel Image">
-                  <% } else { %>
-                    <img src="https://via.placeholder.com/100x60?text=No+Image" class="table-img" alt="No Image">
-                  <% } %>
-                </td>
-                <td><%= b.hotel_name %></td>
-                <td><%= b.username || 'Unknown' %></td>
-                <td><%= b.booking_date.toISOString().split('T')[0] %></td>
-                <td><%= b.checkin_date.toISOString().split('T')[0] %> at <%= b.checkin_time %></td>
-                <td><%= b.checkout_date.toISOString().split('T')[0] %> at <%= b.checkout_time %></td>
-                <td>
-                  <a href="/admin/bookings/edit/<%= b.booking_id %>" class="btn btn-sm btn-warning mb-1">Edit</a>
-                  <form action="/admin/bookings/delete/<%= b.booking_id %>" method="POST" style="display:inline;">
-                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this booking?')">Delete</button>
-                  </form>
-                </td>
-              </tr>
-            <% }) %>
-          <% } else { %>
+        <tbody id="bookingBody">
+          <% bookings.forEach(b => { %>
             <tr>
-              <td colspan="8" class="text-center text-muted">No bookings found.</td>
+              <td><%= b.booking_id   %></td>
+              <td><%= b.username     %></td>
+              <td><%= b.hotel_name   %></td>
+              <td><%= new Date(b.booking_date ).toLocaleDateString() %></td>
+              <td><%= new Date(b.checkin_date ).toLocaleDateString() %></td>
+              <td><%= b.checkin_time  %></td>
+              <td><%= new Date(b.checkout_date).toLocaleDateString() %></td>
+              <td><%= b.checkout_time %></td>
+
+              <!-- ACTIONS -->
+              <td class="p-0">
+                <!-- Edit -->
+                <a href="/admin/bookings/<%= b.booking_id %>/edit"
+                   class="btn btn-sm btn-primary m-1" title="Edit">
+                  <i class="bi bi-pencil-square"></i>
+                </a>
+
+                <!-- Delete -->
+                <form action="/admin/bookings/<%= b.booking_id %>?_method=DELETE"
+                      method="POST" class="d-inline">
+                  <button type="submit" class="btn btn-sm btn-danger m-1"
+                          onclick="return confirm('Delete booking <%= b.booking_id %>?');"
+                          title="Delete">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </form>
+              </td>
             </tr>
-          <% } %>
+          <% }) %>
         </tbody>
       </table>
     </div>
-  </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- ▸ Pagination -->
+    <nav><ul class="pagination" id="pagination"></ul></nav>
+  </div> <!-- /.container -->
+
+  <!-- Search & pagination (client‑side) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const ROWS_PER_PAGE = 5;
+      const tbody      = document.getElementById('bookingBody');
+      const pagination = document.getElementById('pagination');
+      const searchBox  = document.getElementById('searchInput');
+      const allRows    = Array.from(tbody.querySelectorAll('tr'));
+      let currentPage  = 1;
+
+      const filteredRows = () => {
+        const q = searchBox.value.trim().toLowerCase();
+        return allRows.filter(row => row.innerText.toLowerCase().includes(q));
+      };
+
+      const render = () => {
+        const rows       = filteredRows();
+        const totalPages = Math.max(1, Math.ceil(rows.length / ROWS_PER_PAGE));
+        currentPage      = Math.min(currentPage, totalPages);
+
+        // tbody refresh
+        tbody.replaceChildren(...rows.slice(
+          (currentPage - 1) * ROWS_PER_PAGE,
+          currentPage * ROWS_PER_PAGE
+        ));
+
+        // pagination refresh
+        pagination.innerHTML = '';
+        for (let i = 1; i <= totalPages; i++) {
+          const li = document.createElement('li');
+          li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+          li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+          li.onclick = e => { e.preventDefault(); currentPage = i; render(); };
+          pagination.appendChild(li);
+        }
+      };
+
+      searchBox.oninput = () => { currentPage = 1; render(); };
+      render();
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

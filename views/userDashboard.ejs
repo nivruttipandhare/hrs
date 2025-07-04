@@ -1,800 +1,414 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>User Dashboard - Hotel Finder</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-  <style>
-    body {
-      background-color: #f8f9fa;
-      font-family: 'Arial', sans-serif;
-    }
-    .navbar-brand {
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
-    .card {
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      border-radius: 15px;
-      overflow: hidden;
-    }
-    .card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
-    }
-    .card-img-top {
-      object-fit: cover;
-      height: 200px;
-      width: 100%;
-      transition: transform 0.3s ease-in-out;
-    }
-    .card:hover .card-img-top {
-      transform: scale(1.05);
-    }
-    .card-body {
-      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-      display: flex;
-      flex-direction: column;
-    }
-    .card-title {
-      color: #343a40;
-      font-weight: bold;
-      font-size: 1.25rem;
-      margin-bottom: 0.5rem;
-    }
-    .card-text strong {
-      color: #495057;
-    }
-    .carousel-item img {
-      height: 500px;
-      object-fit: cover;
-    }
-    .carousel-caption {
-      background-color: rgba(0, 0, 0, 0.6);
-      border-radius: 8px;
-      padding: 15px;
-      color: white;
-    }
-    footer {
-      background-color: #212529; /* Darker footer */
-      color: white;
-      padding: 40px 0;
-    }
-    .footer-heading {
-      color: #17a2b8; /* Bootstrap info color */
-      margin-bottom: 20px;
-      font-weight: bold;
-    }
-    .footer-link {
-      color: #adb5bd; /* Light grey for links */
-      text-decoration: none;
-      transition: color 0.2s ease;
-    }
-    .footer-link:hover {
-      color: #ffffff;
-    }
-    .modal-sm {
-      max-width: 450px; /* Slightly larger for better detail display */
-    }
-    .amenities-list {
-      list-style-type: none;
-      padding-left: 0;
-    }
-    .amenities-list li::before {
-      content: '✓ ';
-      color: #28a745; /* Green checkmark */
-      font-weight: bold;
-    }
-    .modal-card {
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      padding: 15px;
-      background-color: #fff;
-    }
-    .hover-shadow:hover {
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.25) !important;
-      transition: box-shadow 0.3s ease-in-out;
-    }
-    .heading-custom {
-      color: #007bff; 
-      transition: color 0.3s ease, transform 0.3s ease;
-      cursor: pointer;
-      font-size: 2.5rem;
-      font-weight: 700;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-    }
-    .heading-custom:hover {
-      color: #0056b3; 
-      transform: scale(1.02); /* Slight zoom effect */
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-      .carousel-item img {
-        height: 300px;
-      }
-      .carousel-caption {
-        font-size: 0.8rem;
-        padding: 10px;
-      }
-      .carousel-caption h4 {
-        font-size: 1.2rem;
-      }
-      .footer-content {
-        flex-direction: column;
-      }
-      .footer-content > div {
-        min-width: unset;
-        width: 100%;
-      }
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>User Dashboard - Hotel Finder</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/userDashboard.css"/>
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Hotel Finder <i class="bi bi-geo-alt-fill"></i></a>
+            <a class="nav-link text-success btn btn-outline-secondary text-primary text-decoration-none card shadow-sm hover-shadow d-none d-lg-block p-2" href="/user/hotelRecom">Recommendations</a>
 
-  <div class="container mt-3 d-none">
-    <pre>Debug: Hotels = <%= JSON.stringify(hotels, null, 2) %></pre>
-    <pre>Debug: User = <%= JSON.stringify(user, null, 2) %></pre>
-    <pre>Debug: Bookings = <%= JSON.stringify(bookings, null, 2) %></pre>
-  </div>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">Hotel Finder <i class="bi bi-geo-alt-fill"></i></a>
-      <a class="nav-link text-success btn btn-outline-secondary text-primary text-decoration-none card shadow-sm hover-shadow d-none d-lg-block p-2" href="/user/hotelRecom">Recommendations</a>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav align-items-center">
+                    <% if (!user) { %>
+                        <li class="nav-item me-2">
+                            <a href="/login" class="btn btn-outline-light btn-sm">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/register" class="btn btn-success btn-sm">Register</a>
+                        </li>
+                    <% } else { %>
+                        <li class="nav-item me-3 text-white">
+                            Welcome, <strong><%= user.username %></strong>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/logout" class="btn btn-danger btn-sm">Logout</a>
+                        </li>
+                    <% } %>
+                    <li class="nav-item d-lg-none mt-2">
+                        <a class="btn btn-secondary btn-sm w-100" href="/user/hotelRecom">Recommendations</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-        <ul class="navbar-nav align-items-center">
-          <% if (!user) { %>
-            <li class="nav-item me-2">
-              <a href="/login" class="btn btn-outline-light btn-sm">Login</a>
-            </li>
-            <li class="nav-item">
-              <a href="/register" class="btn btn-success btn-sm">Register</a>
-            </li>
-          <% } else { %>
-            <li class="nav-item me-3 text-white">
-              Welcome, <strong><%= user.username %></strong>
-            </li>
-            <li class="nav-item">
-              <a href="/logout" class="btn btn-danger btn-sm">Logout</a>
-            </li>
-          <% } %>
-          <li class="nav-item d-lg-none mt-2">
-            <a class="btn btn-secondary btn-sm w-100" href="/user/hotelRecom">Recommendations</a>
-          </li>
-        </ul>
-      </div>
+    <div id="hotelCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="https://images.pexels.com/photos/635041/pexels-photo-635041.jpeg" class="d-block w-100" alt="The Diamond Palace">
+                <div class="carousel-caption d-none d-md-block">
+                    <h4 class="text-warning">The Diamond Palace</h4>
+                    <p class="mb-1">⭐ 4.5 | 📍 Koregaon Park, Pune</p>
+                    <p class="mb-0">"Luxury experience with excellent amenities."</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://images.pexels.com/photos/261395/pexels-photo-261395.jpeg" class="d-block w-100" alt="Blue Lagoon Resort">
+                <div class="carousel-caption d-none d-md-block">
+                    <h4 class="text-warning">Blue Lagoon Resort</h4>
+                    <p class="mb-1">⭐ 4.2 | 📍 Lonavala, Maharashtra</p>
+                    <p class="mb-0">"Peaceful getaway with lake views."</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://images.pexels.com/photos/594077/pexels-photo-594077.jpeg" class="d-block w-100" alt="Green Valley Lodge">
+                <div class="carousel-caption d-none d-md-block">
+                    <h4 class="text-warning">Green Valley Lodge</h4>
+                    <p class="mb-1">⭐ 4.0 | 📍 Munnar, Kerala</p>
+                    <p class="mb-0">"Surrounded by lush greenery."</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://images.pexels.com/photos/1457845/pexels-photo-1457845.jpeg" class="d-block w-100" alt="Urban Retreat Suites">
+                <div class="carousel-caption d-none d-md-block">
+                    <h4 class="text-warning">Urban Retreat Suites</h4>
+                    <p class="mb-1">⭐ 4.6 | 📍 Connaught Place, Delhi</p>
+                    <p class="mb-0">"Modern and sophisticated comfort."</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg" class="d-block w-100" alt="Fariyas Resort">
+                <div class="carousel-caption d-none d-md-block">
+                    <h4 class="text-warning">Fariyas Resort</h4>
+                    <p class="mb-1">⭐ 4.7 | 📍 Lonavala, Maharashtra</p>
+                    <p class="mb-0">"Family resort with water park."</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://images.pexels.com/photos/261388/pexels-photo-261388.jpeg" class="d-block w-100" alt="Mayur Retreat">
+                <div class="carousel-caption d-none d-md-block">
+                    <h4 class="text-warning">Mayur Retreat & Spa</h4>
+                    <p class="mb-1">⭐ 4.3 | 📍 Lonavala, Maharashtra</p>
+                    <p class="mb-0">"Excellent spa and family stay."</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://images.pexels.com/photos/97083/pexels-photo-97083.jpeg" class="d-block w-100" alt="Misty Meadows">
+                <div class="carousel-caption d-none d-md-block">
+                    <h4 class="text-warning">Misty Meadows</h4>
+                    <p class="mb-1">⭐ 4.0 | 📍 Lonavala, Maharashtra</p>
+                    <p class="mb-0">"Scenic, cozy, and peaceful."</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://images.pexels.com/photos/271643/pexels-photo-271643.jpeg" class="d-block w-100" alt="Sterling Lonavala">
+                <div class="carousel-caption d-none d-md-block">
+                    <h4 class="text-warning">Sterling Lonavala</h4>
+                    <p class="mb-1">⭐ 4.1 | 📍 Lonavala, Maharashtra</p>
+                    <p class="mb-0">"Modern hotel with great service."</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://images.pexels.com/photos/271631/pexels-photo-271631.jpeg" class="d-block w-100" alt="Elixir Resort">
+                <div class="carousel-caption d-none d-md-block">
+                    <h4 class="text-warning">Elixir Resort</h4>
+                    <p class="mb-1">⭐ 4.4 | 📍 Munnar, Kerala</p>
+                    <p class="mb-0">"Tea plantation hilltop resort."</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://images.pexels.com/photos/1134176/pexels-photo-1134176.jpeg" class="d-block w-100" alt="Munnar Tea Country">
+                <div class="carousel-caption d-none d-md-block">
+                    <h4 class="text-warning">Munnar Tea Country Resort</h4>
+                    <p class="mb-1">⭐ 4.2 | 📍 Munnar, Kerala</p>
+                    <p class="mb-0">"Surrounded by tea estates."</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://images.pexels.com/photos/2467285/pexels-photo-2467285.jpeg" class="d-block w-100" alt="Taj Connaught">
+                <div class="carousel-caption d-none d-md-block">
+                    <h4 class="text-warning">Taj Connaught</h4>
+                    <p class="mb-1">⭐ 4.8 | 📍 Connaught Place, Delhi</p>
+                    <p class="mb-0">"Luxury by Taj, heart of Delhi."</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg" class="d-block w-100" alt="The Imperial Delhi">
+                <div class="carousel-caption d-none d-md-block">
+                    <h4 class="text-warning">The Imperial Delhi</h4>
+                    <p class="mb-1">⭐ 4.9 | 📍 Connaught Place, Delhi</p>
+                    <p class="mb-0">"Historic charm meets luxury."</p>
+                </div>
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#hotelCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#hotelCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
     </div>
-  </nav>
 
-  <div id="hotelCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
+    <div class="container my-5">
+        <h2 class="text-center mb-5 heading-custom">Available Hotels</h2>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-danger text-center"><%= error %></div>
+        <% } %>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <% if (hotels && Array.isArray(hotels) && hotels.length) { %>
+                <% hotels.forEach(hotel => { %>
+                    <div class="col">
+                        <div class="card h-100 shadow-sm">
+                            <% if (hotel.hotel_image) { %>
+                                <img src="/Uploads/hotels/<%= hotel.hotel_image %>" class="card-img-top" alt="Hotel Image" />
+                            <% } else { %>
+                                <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 200px;">
+                                    <span class="text-muted fs-4"><i class="bi bi-image"></i> No Image</span>
+                                </div>
+                            <% } %>
+                            <div class="card-body">
+                                <h5 class="card-title"><%= hotel.hotel_name || 'Unknown Hotel' %></h5>
+                                <p class="card-text mb-2">
+                                    <i class="bi bi-envelope-fill text-info"></i> <strong>Email:</strong> <%= hotel.hotel_email || 'N/A' %><br>
+                                    <i class="bi bi-telephone-fill text-info"></i> <strong>Contact:</strong> <%= hotel.hotel_contact || 'N/A' %><br>
+                                    <i class="bi bi-star-fill text-warning"></i> <strong>Rating:</strong> <%= hotel.rating || 0 %> ⭐ (<%= hotel.reviewcount || 0 %> Reviews)
+                                </p> 
+                                <div class="mt-auto d-flex gap-2">
+                                    <button type="button" class="btn btn-sm btn-primary view-details flex-grow-1" data-hotel-id="<%= hotel.hotel_id %>">
+                                        <i class="bi bi-info-circle me-1"></i> View Details
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-success book-now flex-grow-1" data-hotel-id="<%= hotel.hotel_id %>" data-hotel-name="<%= hotel.hotel_name || 'Unknown Hotel' %>">
+                                        <i class="bi bi-journal-bookmark-fill me-1"></i> Book Now
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div class="col-12 text-center text-muted py-5">
+                    <p class="fs-5"><i class="bi bi-x-circle-fill me-2"></i> No hotels available at the moment. Please try again later.</p>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <div class="modal fade" id="viewDetailsModal" tabindex="-1" aria-labelledby="viewDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content shadow-lg">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="viewDetailsModalLabel"><i class="bi bi-building me-2"></i>Hotel Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="hotel-details-content" class="modal-card">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading details...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content shadow-lg">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="bookingModalLabel"><i class="bi bi-calendar-check me-2"></i>Book Hotel</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="bookingForm">
+                        <input type="hidden" name="hotel_id" id="booking_hotel_id">
+                        <input type="hidden" name="hotel_name" id="booking_hotel_name">
+                        <input type="hidden" name="username" id="booking_username">
+                        <div class="mb-3">
+                            <label for="booking_date" class="form-label">Booking Date</label>
+                            <input type="date" class="form-control" id="booking_date" name="booking_date" value="<%= new Date().toISOString().split('T')[0] %>" required readonly>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="checkin_date" class="form-label">Check-in Date</label>
+                                <input type="date" class="form-control" id="checkin_date" name="checkin_date" 
+                                        value="<%= new Date().toISOString().split('T')[0] %>" 
+                                        min="<%= new Date().toISOString().split('T')[0] %>" 
+                                        required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="checkin_time" class="form-label">Check-in Time</label>
+                                <input type="time" class="form-control" id="checkin_time" name="checkin_time" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="checkout_date" class="form-label">Check-out Date</label>
+                                <input type="date" class="form-control" id="checkout_date" name="checkout_date" 
+                                        min="<%= new Date().toISOString().split('T')[0] %>" 
+                                        required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="checkout_time" class="form-label">Check-out Time</label>
+                                <input type="time" class="form-control" id="checkout_time" name="checkout_time" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100" id="confirmBookingBtn">Confirm Booking</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark py-5 border-top">
+        <div class="container">
+
+            <div class="row text-center g-4">
+
+                <div class="col-md-4 d-flex align-items-stretch">
+                    <div class="card w-100 shadow-sm border-0 p-4 hover-shadow">
+                        <h5 class="text-primary mb-3">User Reviews</h5>
+                        <blockquote class="blockquote">
+                            <p>“We finally have full control over room pricing. It’s fast, easy, and incredibly reliable.”</p>
+                            <footer class="blockquote-footer">Happy Hotelier</footer>
+                        </blockquote>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary" id="addYourReviewBtn"> 
+                                <i class="bi bi-chat-left-text me-1"></i> Add Your Review
+                            </button>
+                            <button class="btn btn-outline-info" id="viewPreviousReviewsBtn">
+                                <i class="bi bi-eye me-1"></i> View Previous Reviews
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 d-flex align-items-stretch">
+                    <div class="card w-100 shadow-sm border-0 p-4 hover-shadow">
+                        <h5 class="text-primary mb-3">Our Location</h5>
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15126.93855502476!2d73.87321525!3d18.60830495!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2c0e86b2d2967%3A0x6b8f36c5d1e2e6c7!2sKoregaon%20Park%2C%20Pune%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1719999999999!5m2!1sen!2sin" width="100%" height="200" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                </div>
+
+                <div class="col-md-4 d-flex align-items-stretch">
+                    <div class="card w-100 shadow-sm border-0 p-4 hover-shadow">
+                        <h5 class="text-primary mb-3">Contact</h5>
+                        <p class="mb-1">📧 <a href="mailto:support@hotelfinder.com" class="text-decoration-none text-dark">support@hotelfinder.com</a></p>
+                        <p class="mb-0">📞 <a href="tel:+919876543210" class="text-decoration-none text-dark">+91 98765 43210</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <form id="reviewForm" class="modal-content shadow">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="reviewModalLabel"><i class="bi bi-chat-left-text me-2"></i>Submit Your Review</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <% if (user) { %>
+                                <input type="hidden" name="username" value="<%= user.username %>">
+                                <input type="hidden" name="userid" value="<%= user.userid %>"> 
+                                <p class="text-muted small mb-3">Reviewing as: <strong><%= user.username %></strong></p>
+                            <% } else { %>
+                                <input type="hidden" name="username" value="">
+                                <input type="hidden" name="userid" value=""> 
+                                <div class="alert alert-warning">Please <a href="/login" class="alert-link">login</a> to submit a review.</div>
+                            <% } %>
+
+                            <div class="mb-3">
+                                <label for="review_hotel_id" class="form-label">Select Hotel</label>
+                                <select name="hotel_id" id="review_hotel_id" class="form-select" required>
+                                    <option value="">Select a Hotel</option>
+                                    <% if (hotels && hotels.length) { %>
+                                        <% hotels.forEach(hotel => { %>
+                                            <option value="<%= hotel.hotel_id %>"><%= hotel.hotel_name %></option>
+                                        <% }) %>
+                                    <% } %>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="rev_text" class="form-label">Review</label>
+                                <textarea name="rev_text" id="rev_text" class="form-control" rows="3" required></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="rating" class="form-label">Rating</label>
+                                <select name="rating" id="rating" class="form-select" required>
+                                    <option value="">Select Rating</option>
+                                    <option value="1">⭐</option>
+                                    <option value="2">⭐⭐</option>
+                                    <option value="3">⭐⭐⭐</option>
+                                    <option value="4">⭐⭐⭐⭐</option>
+                                    <option value="5">⭐⭐⭐⭐⭐</option>
+                                </select>
+                            </div>
+
+                            <input type="hidden" name="rev_date" id="rev_date_add_review">
+
+                            <div id="thankYouMsg" class="alert alert-success d-none mt-2">
+                                ✅ Thank you for your review!
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <% if (user) { %>
+                                <button type="submit" class="btn btn-success w-100">Submit Review</button>
+                            <% } else { %>
+                                <button type="button" class="btn btn-success w-100" disabled>Login to Submit</button>
+                            <% } %>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="modal fade" id="previousReviewsModal" tabindex="-1" aria-labelledby="previousReviewsModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable">
+                    <div class="modal-content shadow-lg">
+                        <div class="modal-header bg-info text-white">
+                            <h5 class="modal-title" id="previousReviewsModalLabel"><i class="bi bi-star-half me-2"></i>Previous Reviews</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="previous-reviews-content">
+                                <div class="text-center py-4">
+                                    <div class="spinner-border text-info" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2 text-dark">Loading reviews...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4 border-top pt-3">
+                <p class="mb-0">Developed by <strong>Hotel Finder Team</strong> © 2025</p>
+            </div>
+        </div>
+    </footer>
+<script src="/js/userDashboard.js"></script>
+<!-- SweetAlert2 (required for masked input) -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     
-  <div class="carousel-inner">
-
-    <div class="carousel-item active">
-      <img src="https://images.pexels.com/photos/635041/pexels-photo-635041.jpeg" class="d-block w-100" alt="The Diamond Palace">
-      <div class="carousel-caption d-none d-md-block">
-        <h4 class="text-warning">The Diamond Palace</h4>
-        <p class="mb-1">⭐ 4.5 | 📍 Koregaon Park, Pune</p>
-        <p class="mb-0">"Luxury experience with excellent amenities."</p>
-      </div>
-    </div>
-
-    <div class="carousel-item">
-      <img src="https://images.pexels.com/photos/261395/pexels-photo-261395.jpeg" class="d-block w-100" alt="Blue Lagoon Resort">
-      <div class="carousel-caption d-none d-md-block">
-        <h4 class="text-warning">Blue Lagoon Resort</h4>
-        <p class="mb-1">⭐ 4.2 | 📍 Lonavala, Maharashtra</p>
-        <p class="mb-0">"Peaceful getaway with lake views."</p>
-      </div>
-    </div>
-
-    <div class="carousel-item">
-      <img src="https://images.pexels.com/photos/594077/pexels-photo-594077.jpeg" class="d-block w-100" alt="Green Valley Lodge">
-      <div class="carousel-caption d-none d-md-block">
-        <h4 class="text-warning">Green Valley Lodge</h4>
-        <p class="mb-1">⭐ 4.0 | 📍 Munnar, Kerala</p>
-        <p class="mb-0">"Surrounded by lush greenery."</p>
-      </div>
-    </div>
-
-    <div class="carousel-item">
-      <img src="https://images.pexels.com/photos/1457845/pexels-photo-1457845.jpeg" class="d-block w-100" alt="Urban Retreat Suites">
-      <div class="carousel-caption d-none d-md-block">
-        <h4 class="text-warning">Urban Retreat Suites</h4>
-        <p class="mb-1">⭐ 4.6 | 📍 Connaught Place, Delhi</p>
-        <p class="mb-0">"Modern and sophisticated comfort."</p>
-      </div>
-    </div>
-
-    <div class="carousel-item">
-      <img src="https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg" class="d-block w-100" alt="Fariyas Resort">
-      <div class="carousel-caption d-none d-md-block">
-        <h4 class="text-warning">Fariyas Resort</h4>
-        <p class="mb-1">⭐ 4.7 | 📍 Lonavala, Maharashtra</p>
-        <p class="mb-0">"Family resort with water park."</p>
-      </div>
-    </div>
-
-    <div class="carousel-item">
-      <img src="https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg" class="d-block w-100" alt="Rhythm Lonavala">
-      <div class="carousel-caption d-none d-md-block">
-        <h4 class="text-warning">Rhythm Lonavala</h4>
-        <p class="mb-1">⭐ 4.8 | 📍 Lonavala, Maharashtra</p>
-        <p class="mb-0">"Wellness & luxury experience."</p>
-      </div>
-    </div>
-
-    <div class="carousel-item">
-      <img src="https://images.pexels.com/photos/189293/pexels-photo-189293.jpeg" class="d-block w-100" alt="The Machan">
-      <div class="carousel-caption d-none d-md-block">
-        <h4 class="text-warning">The Machan</h4>
-        <p class="mb-1">⭐ 4.5 | 📍 Lonavala, Maharashtra</p>
-        <p class="mb-0">"Treehouse resort in nature."</p>
-      </div>
-    </div>
-
-    <div class="carousel-item">
-      <img src="https://images.pexels.com/photos/271639/pexels-photo-271639.jpeg" class="d-block w-100" alt="Della Resorts">
-      <div class="carousel-caption d-none d-md-block">
-        <h4 class="text-warning">Della Resorts</h4>
-        <p class="mb-1">⭐ 4.6 | 📍 Lonavala, Maharashtra</p>
-        <p class="mb-0">"Adventure and luxury combined."</p>
-      </div>
-    </div>
-
-    <div class="carousel-item">
-      <img src="https://images.pexels.com/photos/338504/pexels-photo-338504.jpeg" class="d-block w-100" alt="The Lagoona Resort">
-      <div class="carousel-caption d-none d-md-block">
-        <h4 class="text-warning">The Lagoona Resort</h4>
-        <p class="mb-1">⭐ 4.1 | 📍 Lonavala, Maharashtra</p>
-        <p class="mb-0">"Eco-friendly with waterbody."</p>
-      </div>
-    </div>
-
-    <div class="carousel-item">
-      <img src="https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg" class="d-block w-100" alt="Ikshana Resort">
-      <div class="carousel-caption d-none d-md-block">
-        <h4 class="text-warning">Ikshana Resort & Spa</h4>
-        <p class="mb-1">⭐ 4.4 | 📍 Khandala, Lonavala</p>
-        <p class="mb-0">"Spa & mountain view resort."</p>
-      </div>
-    </div>
-
-    <div class="carousel-item">
-      <img src="https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg" class="d-block w-100" alt="Radisson Resort">
-      <div class="carousel-caption d-none d-md-block">
-        <h4 class="text-warning">Radisson Resort & Spa</h4>
-        <p class="mb-1">⭐ 4.5 | 📍 Lonavala, Maharashtra</p>
-        <p class="mb-0">"Elegant business & leisure resort."</p>
-      </div>
-    </div>
-
-    <div class="carousel-item">
-      <img src="https://images.pexels.com/photos/261388/pexels-photo-261388.jpeg" class="d-block w-100" alt="Mayur Retreat">
-      <div class="carousel-caption d-none d-md-block">
-        <h4 class="text-warning">Mayur Retreat & Spa</h4>
-        <p class="mb-1">⭐ 4.3 | 📍 Lonavala, Maharashtra</p>
-        <p class="mb-0">"Excellent spa and family stay."</p>
-      </div>
-    </div>
-
-    <div class="carousel-item">
-      <img src="https://images.pexels.com/photos/271618/pexels-photo-271618.jpeg" class="d-block w-100" alt="7 Apple Resort">
-      <div class="carousel-caption d-none d-md-block">
-        <h4 class="text-warning">7 Apple Resort</h4>
-        <p class="mb-1">⭐ 4.2 | 📍 Lonavala, Maharashtra</p>
-        <p class="mb-0">"Romantic & family friendly."</p>
-      </div>
-    </div>
-
-    <div class="carousel-item">
-      <img src="https://images.pexels.com/photos/97083/pexels-photo-97083.jpeg" class="d-block w-100" alt="Misty Meadows">
-      <div class="carousel-caption d-none d-md-block">
-        <h4 class="text-warning">Misty Meadows</h4>
-        <p class="mb-1">⭐ 4.0 | 📍 Lonavala, Maharashtra</p>
-        <p class="mb-0">"Scenic, cozy, and peaceful."</p>
-      </div>
-    </div>
-
-    <div class="carousel-item">
-      <img src="https://images.pexels.com/photos/271643/pexels-photo-271643.jpeg" class="d-block w-100" alt="Sterling Lonavala">
-      <div class="carousel-caption d-none d-md-block">
-        <h4 class="text-warning">Sterling Lonavala</h4>
-        <p class="mb-1">⭐ 4.1 | 📍 Lonavala, Maharashtra</p>
-        <p class="mb-0">"Modern hotel with great service."</p>
-      </div>
-    </div>
-
-    <div class="carousel-item">
-      <img src="https://images.pexels.com/photos/261169/pexels-photo-261169.jpeg" class="d-block w-100" alt="The Orchid Lonavala">
-      <div class="carousel-caption d-none d-md-block">
-        <h4 class="text-warning">The Orchid Lonavala</h4>
-        <p class="mb-1">⭐ 4.3 | 📍 Lonavala, Maharashtra</p>
-        <p class="mb-0">"Outdoor pool & eco design."</p>
-      </div>
-    </div>
-
-    <div class="carousel-item">
-      <img src="https://images.pexels.com/photos/271631/pexels-photo-271631.jpeg" class="d-block w-100" alt="Elixir Resort">
-      <div class="carousel-caption d-none d-md-block">
-        <h4 class="text-warning">Elixir Resort</h4>
-        <p class="mb-1">⭐ 4.4 | 📍 Munnar, Kerala</p>
-        <p class="mb-0">"Tea plantation hilltop resort."</p>
-      </div>
-    </div>
-
-    <div class="carousel-item">
-      <img src="https://images.pexels.com/photos/1134176/pexels-photo-1134176.jpeg" class="d-block w-100" alt="Munnar Tea Country">
-      <div class="carousel-caption d-none d-md-block">
-        <h4 class="text-warning">Munnar Tea Country Resort</h4>
-        <p class="mb-1">⭐ 4.2 | 📍 Munnar, Kerala</p>
-        <p class="mb-0">"Surrounded by tea estates."</p>
-      </div>
-    </div>
-
-    <div class="carousel-item">
-      <img src="https://images.pexels.com/photos/2467285/pexels-photo-2467285.jpeg" class="d-block w-100" alt="Taj Connaught">
-      <div class="carousel-caption d-none d-md-block">
-        <h4 class="text-warning">Taj Connaught</h4>
-        <p class="mb-1">⭐ 4.8 | 📍 Connaught Place, Delhi</p>
-        <p class="mb-0">"Luxury by Taj, heart of Delhi."</p>
-      </div>
-    </div>
-
-    <div class="carousel-item">
-      <img src="https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg" class="d-block w-100" alt="The Imperial Delhi">
-      <div class="carousel-caption d-none d-md-block">
-        <h4 class="text-warning">The Imperial Delhi</h4>
-        <p class="mb-1">⭐ 4.9 | 📍 Connaught Place, Delhi</p>
-        <p class="mb-0">"Historic charm meets luxury."</p>
-      </div>
-    </div>
-
-  </div>
-
-  <button class="carousel-control-prev" type="button" data-bs-target="#hotelCarousel" data-bs-slide="prev">
-    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Previous</span>
-  </button>
-  <button class="carousel-control-next" type="button" data-bs-target="#hotelCarousel" data-bs-slide="next">
-    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-    <span class="visually-hidden">Next</span>
-  </button>
-</div>
-
-
-  <div class="container my-5">
-    <h2 class="text-center mb-5 heading-custom">Available Hotels</h2>
-
-    <% if (typeof error !== 'undefined' && error) { %>
-      <div class="alert alert-danger text-center"><%= error %></div>
-    <% } %>
-
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-      <% if (hotels && Array.isArray(hotels) && hotels.length) { %>
-        <% hotels.forEach(hotel => { %>
-          <div class="col">
-            <div class="card h-100 shadow-sm">
-              <% if (hotel.hotel_image) { %>
-                <img src="/Uploads/hotels/<%= hotel.hotel_image %>" class="card-img-top" alt="Hotel Image" />
-              <% } else { %>
-                <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 200px;">
-                  <span class="text-muted fs-4"><i class="bi bi-image"></i> No Image</span>
-                </div>
-              <% } %>
-              <div class="card-body">
-                <h5 class="card-title"><%= hotel.hotel_name || 'Unknown Hotel' %></h5>
-                <p class="card-text mb-2">
-                  <i class="bi bi-envelope-fill text-info"></i> <strong>Email:</strong> <%= hotel.hotel_email || 'N/A' %><br>
-                  <i class="bi bi-telephone-fill text-info"></i> <strong>Contact:</strong> <%= hotel.hotel_contact || 'N/A' %><br>
-                  <i class="bi bi-star-fill text-warning"></i> <strong>Rating:</strong> <%= hotel.rating || 0 %> ⭐ (<%= hotel.reviewcount || 0 %> Reviews)
-                </p>
-                <div class="mt-auto d-flex gap-2">
-                  <button type="button" class="btn btn-sm btn-primary view-details flex-grow-1" data-hotel-id="<%= hotel.hotel_id %>">
-                    <i class="bi bi-info-circle me-1"></i> View Details
-                  </button>
-                  <button type="button" class="btn btn-sm btn-success book-now flex-grow-1" data-hotel-id="<%= hotel.hotel_id %>" data-hotel-name="<%= hotel.hotel_name || 'Unknown Hotel' %>">
-                    <i class="bi bi-journal-bookmark-fill me-1"></i> Book Now
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        <% }) %>
-      <% } else { %>
-        <div class="col-12 text-center text-muted py-5">
-          <p class="fs-5"><i class="bi bi-x-circle-fill me-2"></i> No hotels available at the moment. Please try again later.</p>
-        </div>
-      <% } %>
-    </div>
-  </div>
-
-  <div class="modal fade" id="viewDetailsModal" tabindex="-1" aria-labelledby="viewDetailsModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-sm">
-      <div class="modal-content shadow-lg">
-        <div class="modal-header bg-primary text-white">
-          <h5 class="modal-title" id="viewDetailsModalLabel"><i class="bi bi-building me-2"></i>Hotel Details</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div id="hotel-details-content" class="modal-card">
-            <div class="text-center py-4">
-              <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
-              </div>
-              <p class="mt-2">Loading details...</p>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-sm">
-      <div class="modal-content shadow-lg">
-        <div class="modal-header bg-success text-white">
-          <h5 class="modal-title" id="bookingModalLabel"><i class="bi bi-calendar-check me-2"></i>Book Hotel</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form id="bookingForm">
-            <input type="hidden" name="hotel_id" id="booking_hotel_id">
-            <input type="hidden" name="hotel_name" id="booking_hotel_name">
-            <input type="hidden" name="username" id="booking_username">
-            <div class="mb-3">
-              <label for="booking_date" class="form-label">Booking Date</label>
-              <input type="date" class="form-control" id="booking_date" name="booking_date" value="<%= new Date().toISOString().split('T')[0] %>" required readonly>
-            </div>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="checkin_date" class="form-label">Check-in Date</label>
-                <input type="date" class="form-control" id="checkin_date" name="checkin_date" 
-                       value="<%= new Date().toISOString().split('T')[0] %>" 
-                       min="<%= new Date().toISOString().split('T')[0] %>" 
-                       required>
-              </div>
-              <div class="col-md-6 mb-3">
-                <label for="checkin_time" class="form-label">Check-in Time</label>
-                <input type="time" class="form-control" id="checkin_time" name="checkin_time" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="checkout_date" class="form-label">Check-out Date</label>
-                <input type="date" class="form-control" id="checkout_date" name="checkout_date" 
-                       min="<%= new Date().toISOString().split('T')[0] %>" 
-                       required>
-              </div>
-              <div class="col-md-6 mb-3">
-                <label for="checkout_time" class="form-label">Check-out Time</label>
-                <input type="time" class="form-control" id="checkout_time" name="checkout_time" required>
-              </div>
-            </div>
-            <button type="submit" class="btn btn-success w-100" id="confirmBookingBtn">Confirm Booking</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <footer class="bg-dark py-5 border-top">
-  <div class="container">
-
-    <div class="row text-center g-4">
-
-      <div class="col-md-4 d-flex align-items-stretch">
-        <div class="card w-100 shadow-sm border-0 p-4 hover-shadow">
-          <h5 class="text-primary mb-3">User Review</h5>
-          <blockquote class="blockquote">
-            <p>“We finally have full control over room pricing. It’s fast, easy, and incredibly reliable.”</p>
-            <footer class="blockquote-footer">Happy Hotelier</footer>
-          </blockquote>
-          <button class="btn btn-outline-primary mt-3" data-bs-toggle="modal" data-bs-target="#reviewModal">
-            <i class="bi bi-chat-left-text me-1"></i> Add Your Review
-          </button>
-        </div>
-      </div>
-
-      <div class="col-md-4 d-flex align-items-stretch">
-        <div class="card w-100 shadow-sm border-0 p-4 hover-shadow">
-          <h5 class="text-primary mb-3">Our Location</h5>
-          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15126.932701043924!2d73.80554185!3d18.524564999999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2bf2e6746110f%3A0x8dd34812b1d3d63!2sPune%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1701720000000!5m2!1sen!2sin" width="100%" height="200" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-        </div>
-      </div>
-
-      <div class="col-md-4 d-flex align-items-stretch">
-        <div class="card w-100 shadow-sm border-0 p-4 hover-shadow">
-          <h5 class="text-primary mb-3">Contact</h5>
-          <p class="mb-1">📧 <a href="mailto:support@hotelfinder.com" class="text-decoration-none text-dark">support@hotelfinder.com</a></p>
-          <p class="mb-0">📞 <a href="tel:+919876543210" class="text-decoration-none text-dark">+91 98765 43210</a></p>
-        </div>
-      </div>
-    </div>
-
-    <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <form id="reviewForm" class="modal-content shadow">
-          <div class="modal-header">
-            <h5 class="modal-title" id="reviewModalLabel">Submit Your Review</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-
-          <div class="modal-body">
-            <div class="mb-3">
-              <label class="form-label">Review</label>
-              <textarea name="rev_text" class="form-control" required></textarea>
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label">Rating</label>
-              <select name="rating" class="form-select" required>
-                <option value="">Select Rating</option>
-                <option value="1">⭐</option>
-                <option value="2">⭐⭐</option>
-                <option value="3">⭐⭐⭐</option>
-                <option value="4">⭐⭐⭐⭐</option>
-                <option value="5">⭐⭐⭐⭐⭐</option>
-              </select>
-            </div>
-
-            <input type="hidden" name="rev_date" id="rev_date">
-
-            <div id="thankYouMsg" class="alert alert-success d-none mt-2">
-              ✅ Thank you for your review!
-            </div>
-          </div>
-
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-success w-100">Submit Review</button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <div class="text-center mt-4 border-top pt-3">
-      <p class="mb-0">Developed by <strong>Hotel Finder Team</strong> © 2025</p>
-    </div>
-  </div>
-</footer>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-  <script>
-    // XHR Request Helper
-    function makeRequest(method, url, data, callback) {
-      var xhr = new XMLHttpRequest();
-      xhr.open(method, url);
-      xhr.onload = function() {
-        var responseData = null;
-        if (xhr.status === 200 && xhr.getResponseHeader('Content-Type') && xhr.getResponseHeader('Content-Type').includes('application/json')) {
-          responseData = JSON.parse(xhr.responseText); // No try-catch as requested
-        }
-        callback(xhr.status === 200 ? null : 'Error ' + xhr.status, responseData);
-      };
-      xhr.onerror = function() {
-        callback('Network error', null);
-      };
-      if (data) {
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.send(JSON.stringify(data));
-      } else {
-        xhr.send();
-      }
-    }
-
-    // View Details Handler
-    document.querySelectorAll('.view-details').forEach(function(link) {
-      link.addEventListener('click', function(e) {
-        e.preventDefault();
-        const hotelId = this.dataset.hotelId;
-        const hotelDetailsContent = document.getElementById('hotel-details-content');
-
-        hotelDetailsContent.innerHTML = `
-          <div class="text-center py-4">
-            <div class="spinner-border text-primary" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-            <p class="mt-2">Loading details...</p>
-          </div>
-        `;
-
-        makeRequest('GET', '/api/hotel/' + hotelId, null, function(error, data) {
-          if (error) {
-            hotelDetailsContent.innerHTML = '<p class="text-danger text-center py-4">Failed to load details. ' + (error === 'Error 404' ? 'Hotel not found.' : error) + '</p>';
-            console.error('Error fetching hotel details:', error);
-            return;
-          }
-
-          if (data && data.success && data.hotel) {
-            const hotel = data.hotel;
-            const amenities = data.amenities || [];
-
-            const amenitiesHtml = amenities.length
-              ? amenities.map(a => `<li>${a}</li>`).join('')
-              : '<li>No amenities listed</li>';
-
-            hotelDetailsContent.innerHTML = `
-              <h5>${hotel.hotel_name || 'Unknown Hotel'}</h5>
-              ${hotel.hotel_image ? '<img src="/Uploads/hotels/' + hotel.hotel_image + '" class="img-fluid mb-3 rounded" alt="Hotel Image" style="max-height:200px; width:100%; object-fit:cover;">' : '<p class="text-muted text-center">No image available</p>'}
-              <p>
-                <strong>City:</strong> ${hotel.city_name || 'N/A'}<br>
-                <strong>Area:</strong> ${hotel.area_name || 'N/A'}<br>
-                <strong>Email:</strong> ${hotel.hotel_email || 'N/A'}<br>
-                <strong>Contact:</strong> ${hotel.hotel_contact || 'N/A'}<br>
-                <strong>Rating:</strong> ${hotel.rating || 0} ⭐<br>
-                <strong>Reviews:</strong> ${hotel.reviewcount || 0}
-              </p>
-              <h6>Amenities:</h6>
-              <ul class="amenities-list">${amenitiesHtml}</ul>
-            `;
-
-            var modal = new bootstrap.Modal(document.getElementById('viewDetailsModal'));
-            modal.show();
-          } else {
-            hotelDetailsContent.innerHTML = '<p class="text-danger text-center py-4">Failed to load details. ' + (data ? (data.message || 'Invalid hotel data.') : 'Unknown error.') + '</p>';
-            console.error('Invalid data received for hotel details:', data);
-          }
-        });
-      });
-    });
-
-    // Book Now Handler with Username Prompt and Validation
-    document.querySelectorAll('.book-now').forEach(function(button) {
-      button.addEventListener('click', function(e) {
-        e.preventDefault();
-        const hotelId = this.dataset.hotelId;
-        const hotelName = this.dataset.hotelName;
-
-        const username = prompt('Please enter your username to proceed with booking:');
-        if (!username) {
-          alert('Username is required to book a hotel.');
-          return;
-        }
-
-        // Validate username via AJAX
-        makeRequest('POST', '/api/validate-username', { username: username }, function(error, data) {
-          if (error) {
-            alert('Error validating username: ' + (data && data.message ? data.message : error));
-            return;
-          }
-          if (data && data.success) {
-            document.getElementById('booking_hotel_id').value = hotelId;
-            document.getElementById('booking_hotel_name').value = hotelName;
-            document.getElementById('booking_username').value = username; // Store validated username
-
-            // Set current time for check-in time
-            const now = new Date();
-            const hh = String(now.getHours()).padStart(2, '0');
-            const mm = String(now.getMinutes()).padStart(2, '0');
-            document.getElementById('checkin_time').value = `${hh}:${mm}`;
-
-            var bookingModal = new bootstrap.Modal(document.getElementById('bookingModal'));
-            bookingModal.show();
-          } else {
-            alert(data.message || 'Invalid username. Please try again.');
-          }
-        });
-      });
-    });
-
-    // Booking Form Submission
-    document.getElementById('bookingForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      var form = e.target;
-      var btn = document.getElementById('confirmBookingBtn');
-      btn.disabled = true;
-
-      var checkinDate = new Date(form.checkin_date.value + 'T' + form.checkin_time.value);
-      var checkoutDate = new Date(form.checkout_date.value + 'T' + form.checkout_time.value);
-      
-      var today = new Date();
-      // Set hours, minutes, seconds, milliseconds to 0 for date-only comparison
-      today.setHours(0, 0, 0, 0); 
-      var checkinDateOnly = new Date(form.checkin_date.value); 
-      checkinDateOnly.setHours(0,0,0,0);
-
-      if (checkinDateOnly < today) {
-        alert('Check-in date cannot be in the past.');
-        btn.disabled = false;
-        return;
-      }
-      if (checkoutDate <= checkinDate) {
-        alert('Check-out date and time must be strictly after check-in date and time.');
-        btn.disabled = false;
-        return;
-      }
-
-      var formData = new FormData(form);
-      var jsonData = {};
-      formData.forEach(function(value, key) { jsonData[key] = value; });
-
-      makeRequest('POST', '/api/book', jsonData, function(error, data) {
-        btn.disabled = false;
-        if (error) {
-          alert(data && data.message || 'Booking failed: ' + error);
-          console.error('Booking Error:', error);
-          return;
-        }
-        if (data && data.success) {
-          alert(data.message || 'Booking confirmed!');
-          var modal = bootstrap.Modal.getInstance(document.getElementById('bookingModal'));
-          modal.hide();
-          form.reset();
-          // Re-set initial dates for the next booking attempt
-          form.booking_date.value = new Date().toISOString().split('T')[0];
-          form.checkin_date.value = new Date().toISOString().split('T')[0];
-          // Optionally reload the page to refresh booking list or similar
-          window.location.reload(); 
-        } else {
-          alert(data.message || 'Booking failed');
-          console.error('Booking Failed Data:', data);
-        }
-      });
-    });
-
-    // Review Form Submission
-    document.getElementById('reviewForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-
-      // Set the current datetime in MySQL format: YYYY-MM-DD HH:MM:SS
-      const now = new Date();
-      const formattedDate =
-        now.getFullYear() + '-' +
-        String(now.getMonth() + 1).padStart(2, '0') + '-' +
-        String(now.getDate()).padStart(2, '0') + ' ' +
-        String(now.getHours()).padStart(2, '0') + ':' +
-        String(now.getMinutes()).padStart(2, '0') + ':' +
-        String(now.getSeconds()).padStart(2, '0');
-
-      document.getElementById('rev_date').value = formattedDate;
-
-      const form = e.target;
-      const formData = new FormData(form);
-      const data = {};
-
-      formData.forEach(function (value, key) {
-        data[key] = value;
-      });
-
-      makeRequest('POST', '/submit-review', data, function(error, responseData) {
-        if (error) {
-          alert("❌ Failed to submit review: " + (responseData && responseData.message ? responseData.message : error));
-          console.error('Review submission error:', error, responseData);
-          return;
-        }
-        if (responseData && responseData.success) {
-          document.getElementById('thankYouMsg').classList.remove('d-none');
-          // Optionally, clear the form or close the modal after a short delay
-          setTimeout(() => {
-            var modal = bootstrap.Modal.getInstance(document.getElementById('reviewModal'));
-            modal.hide();
-            form.reset();
-            document.getElementById('thankYouMsg').classList.add('d-none'); // Hide message for next time
-          }, 2000); 
-        } else {
-          alert("❌ Failed to submit review: " + (responseData && responseData.message ? responseData.message : 'Unknown error'));
-        }
-      });
-    });
-
-    // Set initial check-in time on page load
-    document.addEventListener('DOMContentLoaded', () => {
-      const now = new Date();
-      const hh = String(now.getHours()).padStart(2, '0');
-      const mm = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('checkin_time').value = `${hh}:${mm}`;
-    });
-  </script>
 </body>
 </html>
