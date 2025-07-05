@@ -1,57 +1,55 @@
+// routes/userRoutes.js
 const express = require('express');
-const router = express.Router();
-const authController = require('../controllers/authController');
-const hotelController = require('../controllers/hotelController'); // ✅ Import this
-const userController = require('../controllers/userController');   // ✅ Import this
+const router  = express.Router();
 
-// Register page
-router.get('/register', (req, res) => {
-  res.render('register', { message: null });
-});
+const authController  = require('../controllers/authController');
+const hotelController = require('../controllers/hotelController');
+const userController  = require('../controllers/userController');
 
-// Register form submission
+/* ───────── PUBLIC AUTH ROUTES ───────── */
+router.get('/register', (req, res) =>
+  res.render('register', { message: null })
+);
 router.post('/register', authController.register);
 
-// Login page
-router.get('/login', (req, res) => {
-  res.render('login', { message: null });
-});
-
-// Login form submission
+router.get('/login', (req, res) =>
+  res.render('login', { message: null })
+);
 router.post('/login', authController.login);
 
-// Logout
 router.get('/logout', (req, res) => {
   req.session.destroy(err => {
-    if (err) {
-      console.error("Logout error:", err);
-    }
+    if (err) console.error('Logout error:', err);
     res.redirect('/login');
   });
 });
 
-// ✅ User Dashboard with Hotel List and Recommendations
-router.get('/user/dashboard', async (req, res) => {
-  const user = req.session.user;
+/* ───────── UNIVERSAL DASHBOARD (/dashboard) ─────────
+   Accessible to guests AND logged‑in users            */
+router.get('/dashboard', async (req, res) => {
+  const user   = req.session.user || null;               // may be null
+  const hotels = await hotelController.getAllHotels();
 
-  if (!user) return res.redirect('/login');
+  const recommendations = user
+    ? await userController.getRecommendedHotels(user.userid)
+    : [];
 
-  try {
-    const hotels = await hotelController.getAllHotels(); // ✅ Replace with your real method
-    const recommendations = await userController.getRecommendedHotels(user.userid); // ✅ Replace with your real method
+  res.render('userDashboard', {
+    user,                 // null for guests; full object when logged in
+    hotels,
+    recommendations,
+    bookings: [],         // fill later if you have bookings
+    error: req.flash ? req.flash('error') : null
+  });
+});
 
-    res.render('userDashboard', {
-      user,
-      hotels,
-      recommendations,
-      bookings: [],
-      error: req.flash ? req.flash('error') : null
-    });
-
-  } catch (error) {
-    console.error("Dashboard load error:", error);
-    res.status(500).send("Internal Server Error");
-  }
+/* ───────── OPTIONAL: STRICT PRIVATE DASHBOARD ─────────
+   Keep only if you still want /user/dashboard to FORCE login.
+   Otherwise delete this block entirely.                 */
+router.get('/user/dashboard', (req, res) => {
+  if (!req.session.user) return res.redirect('/login');
+  // Re‑use the universal handler logic by calling next route
+  return res.redirect('/dashboard');
 });
 
 module.exports = router;

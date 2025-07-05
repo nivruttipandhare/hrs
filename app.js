@@ -98,8 +98,6 @@ app.use((req, res) => {
   res.status(404).send('Route not found: ' + req.originalUrl);
 });
 
-
-
 app.listen(3500, () => {
   console.log('Server running on port 3500');
 });
